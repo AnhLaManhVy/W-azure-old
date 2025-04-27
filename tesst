@@ -1,299 +1,195 @@
 -- 1) Load thư viện WazureV1 từ GitHub
-local WazureV1 = loadstring(
-    game:HttpGet("https://raw.githubusercontent.com/0xteru/uilibrary/refs/heads/main/Wazure%20V1%20Lib/Source.lua")
-)()
+local WazureV1 = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/0xteru/uilibrary/refs/heads/main/Wazure%20V1%20Lib/Source.lua"
+))()
 
 -- 2) Khởi tạo GUI
 local WazureGui = WazureV1:Start({
-    Name = "W-azure",
+    Name            = "W-azure",
     ["Logo Player"] = "rbxassetid://18243105495",
     ["Name Player"] = "SongDaiThanhHuyenTh",
-    ["Tab Width"] = 120,
-    Color = Color3.fromRGB(6, 141, 234),
+    ["Tab Width"]   = 120,
+    Color           = Color3.fromRGB(6, 141, 234),
     ["Custom Toggle"] = false,
-    ["Save Config"] = {
-        Folder = "W-azure",
-        ["Name Config"] = "Config",
-    },
+    ["Save Config"] = { Folder = "W-azure", ["Name Config"] = "Config" },
     ["CloseCallBack"] = function()
         WazureV1:Notify({
-            Title = "DogTanny",
+            Title   = "DogTanny",
             Content = "Closed UI!",
-            Logo = "rbxassetid://18289959127",
-            Time = 1,
-            Delay = 5,
+            Logo    = "rbxassetid://18289959127",
+            Time    = 1,
+            Delay   = 5,
         })
     end
 })
 
+-- services
+local Players           = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace         = game:GetService("Workspace")
+
 -- 3) Tạo các Tab
-local MainTab = WazureGui:MakeTab("Main")
-local SubFarmTab = WazureGui:MakeTab("Sub Farm")
-local FruitsRaidTab = WazureGui:MakeTab("Fruits - Raid")
-local StatusTab = WazureGui:MakeTab("Status")
-local ServerTab = WazureGui:MakeTab("Server")
-local PvPTab = WazureGui:MakeTab("PvP")
-local PlayerTab = WazureGui:MakeTab("Player")
-local SeaEventTab = WazureGui:MakeTab("Sea Event")
-local LeviathanTab = WazureGui:MakeTab("Leviathan")
-local PrehistoricEventTab = WazureGui:MakeTab("Prehistoric Event")
-local WebhookTab = WazureGui:MakeTab("Webhook")
-local MusicTab = WazureGui:MakeTab("Music")
-local SettingTab = WazureGui:MakeTab("Setting")
-local OneClickTab = WazureGui:MakeTab("OneClick")
-local OneClickDebugTab = WazureGui:MakeTab("OneClickDebug")
-
--- 4) Tạo Tab "Music" với TextInput để nhập URL
-local currentMusic = nil
-local sound = nil
-
--- Hàm kiểm tra định dạng URL (chỉ nhận ID nhạc Roblox)
-local function isValidRobloxAudio(input)
-    if string.find(string.lower(input), "youtube") or string.find(string.lower(input), "youtu.be") then
-        return false
-    end
-    return string.match(input, "^%d+$") or string.find(input, "rbxassetid://")
+local Tabs = {
+    "Main", "Sub Farm", "Fruits - Raid", "Status", "Server", "PvP",
+    "Player", "Sea Event", "Leviathan", "Prehistoric Event",
+    "Webhook", "Music", "Setting", "OneClick", "OneClickDebug"
+}
+local TabObjects = {}
+for _, name in ipairs(Tabs) do
+    TabObjects[name] = WazureGui:MakeTab(name)
 end
 
--- Hàm phát nhạc
-local function playMusic(url)
-    if sound then
-        sound:Destroy() -- Xóa nhạc cũ
-        sound = nil
+-- 4) Tab "Music": TextInput + play
+do
+    local musicTab = TabObjects["Music"]
+    local currentMusic, sound
+
+    local function isValidRobloxAudio(input)
+        return not (input:lower():find("youtube") or input:lower():find("youtu.be"))
+           and (input:match("^%d+$") or input:find("rbxassetid://"))
     end
 
-    -- Tạo Sound mới
-    sound = Instance.new("Sound")
-    sound.Parent = game:GetService("SoundService")
-    sound.SoundId = url
-    sound.Volume = 1
-    sound.Looped = true
-    sound:Play()
+    local function playMusic(url)
+        if sound then sound:Destroy() end
+        sound = Instance.new("Sound", game:GetService("SoundService"))
+        sound.SoundId = url
+        sound.Looped = true
+        sound.Volume = 1
+        sound:Play()
+        print("Đang phát nhạc:", url)
+    end
 
-    print("Đang phát nhạc:", url)
-end
-
--- TextInput trong Tab "Music"
-local MusicInput = MusicTab:MakeTextInput("Music", {
-    ["Title"] = "Music",
-    ["Content"] = "Add URL ID Roblox để phát nhạc",
-    ["Callback"] = function(value)
-        if value ~= "" then
-            if isValidRobloxAudio(value) then
-                -- Nếu chỉ là số, thêm "rbxassetid://"
-                if string.match(value, "^%d+$") then
+    musicTab:MakeTextInput("Music", {
+        Title   = "Music",
+        Content = "Add URL ID Roblox để phát nhạc",
+        Callback = function(value)
+            if value ~= "" and isValidRobloxAudio(value) then
+                if value:match("^%d+$") then
                     value = "rbxassetid://" .. value
                 end
                 currentMusic = value
                 playMusic(currentMusic)
             else
-                -- Notify lỗi nếu nhập link YouTube
                 WazureV1:Notify({
-                    Title = "Lỗi!",
-                    Content = "Không được nhập link YouTube! Chỉ nhận ID nhạc Roblox!",
-                    Logo = "rbxassetid://18289959127",
-                    Time = 2,
+                    Title   = "Lỗi!",
+                    Content = "Chỉ nhận ID nhạc Roblox, không phải YouTube!",
+                    Logo    = "rbxassetid://18289959127",
+                    Time    = 2,
                 })
-                print("URL nhập sai định dạng!")
             end
-        else
-            print("Không có URL được nhập.")
         end
-    end
-})
+    })
+end
 
--- 5) Tạo các Tab khác
-
--- Tab "Sub Farm"
-local SubFarmSeperator = SubFarmTab:MakeSeperator("Thông báo Sub Farm")
-SubFarmSeperator:Set("Tab Sub Farm đã được tạo!")
-local SubFarmButton = SubFarmTab:MakeButton("Bấm vào Sub Farm", {
-    ["Title"] = "Thông báo Sub Farm",
-    ["Content"] = "Bạn vừa nhấn nút Sub Farm!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút Sub Farm đã được nhấn!")
-        WazureV1:Notify({
-            Title = "Sub Farm",
-            Content = "Bạn vừa nhấn nút Sub Farm thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
-    end
-})
-
--- Tab "Fruits - Raid"
-local FruitsRaidSeperator = FruitsRaidTab:MakeSeperator("Thông báo Fruits Raid")
-FruitsRaidSeperator:Set("Tab Fruits Raid đã được tạo!")
-local FruitsRaidButton = FruitsRaidTab:MakeButton("Bấm vào Fruits Raid", {
-    ["Title"] = "Thông báo Fruits Raid",
-    ["Content"] = "Bạn vừa nhấn nút Fruits Raid!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút Fruits Raid đã được nhấn!")
-        WazureV1:Notify({
-            Title = "Fruits Raid",
-            Content = "Bạn vừa nhấn nút Fruits Raid thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
-    end
-})
-
--- Tab "Status"
-local StatusSeperator = StatusTab:MakeSeperator("Thông báo Status")
-StatusSeperator:Set("Tab Status đã được tạo!")
-local StatusButton = StatusTab:MakeButton("Bấm vào Status", {
-    ["Title"] = "Thông báo Status",
-    ["Content"] = "Bạn vừa nhấn nút Status!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút Status đã được nhấn!")
-        WazureV1:Notify({
-            Title = "Status",
-            Content = "Bạn vừa nhấn nút Status thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
-    end
-})
-
--- Tab "Server"
-local ServerSeperator = ServerTab:MakeSeperator("Thông báo Server")
-ServerSeperator:Set("Tab Server đã được tạo!")
-local ServerButton = ServerTab:MakeButton("Bấm vào Server", {
-    ["Title"] = "Thông báo Server",
-    ["Content"] = "Bạn vừa nhấn nút Server!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút Server đã được nhấn!")
-        WazureV1:Notify({
-            Title = "Server",
-            Content = "Bạn vừa nhấn nút Server thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
-    end
-})
-
--- Tab "PvP"
-local PvPSeperator = PvPTab:MakeSeperator("Thông báo PvP")
-PvPSeperator:Set("Tab PvP đã được tạo!")
-local PvPButton = PvPTab:MakeButton("Bấm vào PvP", {
-    ["Title"] = "Thông báo PvP",
-    ["Content"] = "Bạn vừa nhấn nút PvP!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút PvP đã được nhấn!")
-        WazureV1:Notify({
-            Title = "PvP",
-            Content = "Bạn vừa nhấn nút PvP thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
-    end
-})
-
--- Tab "Player"
-local PlayerSeperator = PlayerTab:MakeSeperator("Thông báo Player")
-PlayerSeperator:Set("Tab Player đã được tạo!")
-local PlayerButton = PlayerTab:MakeButton("Bấm vào Player", {
-    ["Title"] = "Thông báo Player",
-    ["Content"] = "Bạn vừa nhấn nút Player!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút Player đã được nhấn!")
-        WazureV1:Notify({
-            Title = "Player",
-            Content = "Bạn vừa nhấn nút Player thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
-    end
-})
-
--- Tab "Webhook"
-local WebhookInput = WebhookTab:MakeTextInput("Webhook", {
-    ["Title"] = "Webhook",
-    ["Content"] = "Add URL WebHook",
-    ["Callback"] = function(value)
-        if value ~= "" then
-            print("WebHook URL đã được nhập:", value)
+-- 5) Tạo các Tab khác với nút demo
+for _, name in ipairs({
+    "Sub Farm", "Fruits - Raid", "Status",
+    "Server", "PvP", "Player",
+    "Sea Event", "Leviathan", "Prehistoric Event",
+    "OneClick", "OneClickDebug"
+}) do
+    local tab = TabObjects[name]
+    tab:MakeSeperator("Thông báo " .. name)
+       :Set("Tab " .. name .. " đã được tạo!")
+    tab:MakeButton("Bấm vào " .. name, {
+        Title   = "Thông báo " .. name,
+        Content = "Bạn vừa nhấn nút " .. name .. "!",
+        Logo    = "rbxassetid://18289959127",
+        Callback = function()
             WazureV1:Notify({
-                Title = "Success",
-                Content = "Webhook URL đã được nhập thành công.",
-                Logo = "rbxassetid://18289959127",
-                Time = 2,
-            })
-        else
-            WazureV1:Notify({
-                Title = "Lỗi",
-                Content = "Chưa nhập Webhook URL!",
-                Logo = "rbxassetid://18289959127",
-                Time = 2,
+                Title   = name,
+                Content = name .. " callback chạy!",
+                Logo    = "rbxassetid://18289959127",
+                Time    = 2,
             })
         end
-    end
-})
+    })
+end
 
--- Tab "Setting"
-local SettingSeperator = SettingTab:MakeSeperator("Thông báo Setting")
-SettingSeperator:Set("Tab Setting đã được tạo!")
-local SettingButton = SettingTab:MakeButton("Bấm vào Setting", {
-    ["Title"] = "Thông báo Setting",
-    ["Content"] = "Bạn vừa nhấn nút Setting!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút Setting đã được nhấn!")
-        WazureV1:Notify({
-            Title = "Setting",
-            Content = "Bạn vừa nhấn nút Setting thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
-    end
- local Toggle = MainTab:MakeToggle(<Fast Attack new>, {
-	["Title"]= <use fast attack>,
-	["Content"] = <roblox change fast attack not use old fast attackkkkk :3>,
-	["Default"] = <boolean>,
-	["Callback"] = <local net=game.ReplicatedStorage.Modules.Net;local player=game.Players.LocalPlayer;local hrp=player.Character and player.Character:WaitForChild("HumanoidRootPart")while task.wait()do if not hrp then return end;local targets,count={},0;for _,_v in next,{workspace:FindFirstChild("Enemies"),workspace:FindFirstChild("Characters")}do if _v then for _,v in next,_v:GetChildren()do local vhrp=v:FindFirstChild("HumanoidRootPart")if v:FindFirstChildWhichIsA("Humanoid")and vhrp and(vhrp.Position-hrp.Position).Magnitude<=50 then count+=1;targets[count]={v,vhrp}end end end end;if count>0 then net["RE/RegisterAttack"]:FireServer(-math.huge)net["RE/RegisterHit"]:FireServer(targets[1][1]:FindFirstChild("Head"),targets)end end>
-})
-Toggle:Set(<boolean>)
-print(Toggle.Value)
-      })
-   end
-  end
-})
--- Tab "OneClick"
-local OneClickButton = OneClickTab:MakeButton("Bấm vào OneClick", {
-    ["Title"] = "Thông báo OneClick",
-    ["Content"] = "Bạn vừa nhấn nút OneClick!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút OneClick đã được nhấn!")
-        WazureV1:Notify({
-            Title = "OneClick",
-            Content = "Bạn vừa nhấn nút OneClick thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
-    end
-})
+-- 6) Tab "Webhook": TextInput + Save demo
+do
+    local webhookTab = TabObjects["Webhook"]
+    local savedWebhook = ""
+    webhookTab:MakeTextInput("Webhook", {
+        Title   = "Webhook",
+        Content = "Nhập URL WebHook",
+        Callback = function(value)
+            savedWebhook = value
+        end
+    })
+    webhookTab:MakeButton("Lưu Webhook", {
+        Title   = "Webhook Saved",
+        Content = "Webhook URL đã được lưu!",
+        Logo    = "rbxassetid://18289959127",
+        Callback = function()
+            if savedWebhook ~= "" then
+                WazureV1:Notify({
+                    Title   = "Success",
+                    Content = "Đã lưu: " .. savedWebhook,
+                    Logo    = "rbxassetid://18289959127",
+                    Time    = 2
+                })
+            else
+                WazureV1:Notify({
+                    Title   = "Lỗi",
+                    Content = "Chưa nhập Webhook URL!",
+                    Logo    = "rbxassetid://18289959127",
+                    Time    = 2
+                })
+            end
+        end
+    })
+end
 
--- Tab "OneClickDebug"
-local OneClickDebugButton = OneClickDebugTab:MakeButton("Bấm vào OneClickDebug", {
-    ["Title"] = "Thông báo OneClickDebug",
-    ["Content"] = "Bạn vừa nhấn nút OneClickDebug!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút OneClickDebug đã được nhấn!")
-        WazureV1:Notify({
-            Title = "OneClickDebug",
-            Content = "Bạn vừa nhấn nút OneClickDebug thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
-    end
-})
+-- 7) Tab "Setting": Toggle "Fast Attack New"
+do
+    local settingTab = TabObjects["Setting"]
+    settingTab:MakeSeperator("Thông báo Setting")
+              :Set("Tab Setting đã được tạo!")
 
--- 6) Kết thúc
+    local fastAttackToggle = settingTab:MakeToggle("Fast Attack New", {
+        Title   = "Use Fast Attack New",
+        Content = "Roblox change fast attack (not use old fast attack)",
+        Default = false,
+        Callback = function(enabled)
+            local net    = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net")
+            local player = Players.LocalPlayer
+            local hrp    = player.Character and player.Character:WaitForChild("HumanoidRootPart")
+
+            if enabled then
+                print("Fast Attack New đã BẬT")
+                spawn(function()
+                    while fastAttackToggle.Value and hrp and task.wait(0.1) do
+                        local targets = {}
+                        for _, container in ipairs({
+                            Workspace:FindFirstChild("Enemies"),
+                            Workspace:FindFirstChild("Characters")
+                        }) do
+                            if container then
+                                for _, v in ipairs(container:GetChildren()) do
+                                    local vhrp = v:FindFirstChild("HumanoidRootPart")
+                                    if v:FindFirstChildWhichIsA("Humanoid")
+                                    and vhrp
+                                    and (vhrp.Position - hrp.Position).Magnitude <= 50 then
+                                        table.insert(targets, v)
+                                    end
+                                end
+                            end
+                        end
+                        if #targets > 0 then
+                            net["RE/RegisterAttack"]:FireServer(-math.huge)
+                            local head = targets[1]:FindFirstChild("Head")
+                            net["RE/RegisterHit"]:FireServer(head, targets)
+                        end
+                    end
+                end)
+            else
+                print("Fast Attack New đã TẮT")
+                -- Vòng lặp tự ngừng vì fastAttackToggle.Value = false
+            end
+        end
+    })
+end
+
+-- 8) Kết thúc
+print("W-azure UI loaded with all tabs & functions.")
