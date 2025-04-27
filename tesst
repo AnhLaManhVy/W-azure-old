@@ -26,53 +26,88 @@ local WazureGui = WazureV1:Start({
     end
 })
 
--- 3) Tạo Tab "Main"
+-- 3) Tạo các Tab
 local MainTab = WazureGui:MakeTab("Main")
-
--- 4) Tạo Tab "Sub Farm"
+local MusicTab = WazureGui:MakeTab("Music")
 local SubFarmTab = WazureGui:MakeTab("Sub Farm")
-
--- 5) Tạo Tab "Player"
 local PlayerTab = WazureGui:MakeTab("Player")
-
--- 6) Tạo Tab "PvP"
 local PvPTab = WazureGui:MakeTab("PvP")
-
--- 7) Tạo Tab "Sea Event"
+local FruitsRaidTab = WazureGui:MakeTab("Fruits - Raid")
+local StatusTab = WazureGui:MakeTab("Status")
+local ServerTab = WazureGui:MakeTab("Server")
 local SeaEventTab = WazureGui:MakeTab("Sea Event")
-
--- 8) Tạo Tab "Leviathan"
 local LeviathanTab = WazureGui:MakeTab("Leviathan")
-
--- 9) Tạo Tab "Prehistoric Event"
 local PrehistoricEventTab = WazureGui:MakeTab("Prehistoric Event")
-
--- 10) Tạo Tab "Webhook"
 local WebhookTab = WazureGui:MakeTab("Webhook")
-
--- 11) Tạo Tab "Setting"
+local RaceV4Tab = WazureGui:MakeTab("Race V4")
 local SettingTab = WazureGui:MakeTab("Setting")
+local OneClickTab = WazureGui:MakeTab("OneClick")
+local OneClickDebugTab = WazureGui:MakeTab("OneClickDebug")
 
--- 12) Tạo Seperator và Button cho mỗi tab (Bạn có thể thêm các thành phần khác vào đây)
+-- 4) Tạo Tab "Music" với TextInput để nhập URL
+local currentMusic = nil
+local sound = nil
 
--- Tab "Main"
-local MainSeperator = MainTab:MakeSeperator("Thông báo Main")
-MainSeperator:Set("Đã khởi tạo UI Main thành công!")
-local MainButton = MainTab:MakeButton("Bấm vào Main", {
-    ["Title"] = "Thông báo Main",
-    ["Content"] = "Bạn vừa nhấn nút Main!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút Main đã được nhấn!")
-        WazureV1:Notify({
-            Title = "Main",
-            Content = "Bạn vừa nhấn nút Main thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
+-- Hàm kiểm tra định dạng URL (chỉ nhận ID nhạc Roblox)
+local function isValidRobloxAudio(input)
+    if string.find(string.lower(input), "youtube") or string.find(string.lower(input), "youtu.be") then
+        return false
+    end
+    return string.match(input, "^%d+$") or string.find(input, "rbxassetid://")
+end
+
+-- Hàm phát nhạc
+local function playMusic(url)
+    if sound then
+        sound:Destroy() -- Xóa nhạc cũ
+        sound = nil
+    end
+
+    -- Tạo Sound mới
+    sound = Instance.new("Sound")
+    sound.Parent = game:GetService("SoundService")
+    sound.SoundId = url
+    sound.Volume = 1
+    sound.Looped = true
+    sound:Play()
+
+    print("Đang phát nhạc:", url)
+endo
+
+-- TextInput trong Tab "Music"
+local MusicInput = MusicTab:MakeTextInput("Music", {
+    ["Title"] = "Music",
+    ["Content"] = "Add URL ID Roblox để phát nhạc",
+    ["Callback"] = function(value)
+        if value ~= "" then
+local MusicInput = MusicTab:MakeTextInput("Music", {
+    ["Title"] = "Music",
+    ["Content"] = "Add URL ID Roblox để phát nhạc",
+    ["Callback"] = function(value)
+            if isValidRobloxAudio(value) then
+                -- Nếu chỉ là số, thêm "rbxassetid://"
+                if string.match(value, "^%d+$") then
+                    value = "rbxassetid://" .. value
+                end
+                currentMusic = value
+                playMusic(currentMusic)
+            else
+                -- Notify lỗi nếu nhập link YouTube
+                WazureV1:Notify({
+                    Title = "Lỗi!",
+                    Content = "Không được nhập link YouTube! Chỉ nhận ID nhạc Roblox!",
+                    Logo = "rbxassetid://18289959127",
+                    Time = 2,
+                })
+                print("URL nhập sai định dạng!")
+            end
+        else
+            print("Không có URL được nhập.")
+        end
     end
 })
 
+-- 5) Tạo các Button và Seperators cho các tab
 -- Tab "Sub Farm"
 local SubFarmSeperator = SubFarmTab:MakeSeperator("Thông báo Sub Farm")
 SubFarmSeperator:Set("Tab Sub Farm đã được tạo!")
@@ -163,25 +198,11 @@ local LeviathanButton = LeviathanTab:MakeButton("Bấm vào Leviathan", {
     end
 })
 
--- Tab "Prehistoric Event"
-local PrehistoricEventSeperator = PrehistoricEventTab:MakeSeperator("Thông báo Prehistoric Event")
-PrehistoricEventSeperator:Set("Tab Prehistoric Event đã được tạo!")
-local PrehistoricEventButton = PrehistoricEventTab:MakeButton("Bấm vào Prehistoric Event", {
-    ["Title"] = "Thông báo Prehistoric Event",
-    ["Content"] = "Bạn vừa nhấn nút Prehistoric Event!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút Prehistoric Event đã được nhấn!")
-        WazureV1:Notify({
-            Title = "Prehistoric Event",
-            Content = "Bạn vừa nhấn nút Prehistoric Event thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
-    end
-})
-
 -- Tab "Webhook"
+local MusicInput = MusicTab:MakeTextInput("Music", {
+    ["Title"] = "Music",
+    ["Content"] = "Add URL ID Roblox để phát nhạc",
+    ["Callback"] = function(value)
 local WebhookSeperator = WebhookTab:MakeSeperator("Thông báo Webhook")
 WebhookSeperator:Set("Tab Webhook đã được tạo!")
 local WebhookButton = WebhookTab:MakeButton("Bấm vào Webhook", {
@@ -216,3 +237,5 @@ local SettingButton = SettingTab:MakeButton("Bấm vào Setting", {
         })
     end
 })
+
+print("UI đã được khởi tạo thành công!")
