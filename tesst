@@ -5,191 +5,132 @@ local WazureV1 = loadstring(game:HttpGet(
 
 -- 2) Khởi tạo GUI
 local WazureGui = WazureV1:Start({
-    Name            = "W-azure",
+    Name = "W-azure",
     ["Logo Player"] = "rbxassetid://18243105495",
     ["Name Player"] = "SongDaiThanhHuyenTh",
-    ["Tab Width"]   = 120,
-    Color           = Color3.fromRGB(6, 141, 234),
+    ["Tab Width"] = 120,
+    Color = Color3.fromRGB(6, 141, 234),
     ["Custom Toggle"] = false,
     ["Save Config"] = { Folder = "W-azure", ["Name Config"] = "Config" },
     ["CloseCallBack"] = function()
         WazureV1:Notify({
-            Title   = "DogTanny",
-            Content = "Closed UI!",
-            Logo    = "rbxassetid://18289959127",
-            Time    = 1,
-            Delay   = 5,
+            Title = "W-azure",
+            Content = "UI Closed",
+            Logo = "rbxassetid://18289959127",
+            Time = 1,
+            Delay = 5,
         })
     end
 })
 
--- services
-local Players           = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace         = game:GetService("Workspace")
-
--- 3) Tạo các Tab
+-- 3) Tạo tất cả các Tab
 local Tabs = {
-    "Main", "Sub Farm", "Fruits - Raid", "Status", "Server", "PvP",
-    "Player", "Sea Event", "Leviathan", "Prehistoric Event",
-    "Webhook", "Music", "Setting", "OneClick", "OneClickDebug"
+    "Main", "Sub Farm", "Fruits - Raid", "Status", "Server", "PvP", "Player", "Sea Event",
+    "Leviathan", "Prehistoric Event", "Webhook", "Music", "Setting", "OneClick", "OneClickDebug"
 }
+
 local TabObjects = {}
 for _, name in ipairs(Tabs) do
     TabObjects[name] = WazureGui:MakeTab(name)
 end
 
--- 4) Tab "Music": TextInput + play
-do
-    local musicTab = TabObjects["Music"]
-    local currentMusic, sound
-
-    local function isValidRobloxAudio(input)
-        return not (input:lower():find("youtube") or input:lower():find("youtu.be"))
-           and (input:match("^%d+$") or input:find("rbxassetid://"))
-    end
-
-    local function playMusic(url)
-        if sound then sound:Destroy() end
-        sound = Instance.new("Sound", game:GetService("SoundService"))
-        sound.SoundId = url
-        sound.Looped = true
-        sound.Volume = 1
-        sound:Play()
-        print("Đang phát nhạc:", url)
-    end
-
-    musicTab:MakeTextInput("Music", {
-        Title   = "Music",
-        Content = "Add URL ID Roblox để phát nhạc",
-        Callback = function(value)
-            if value ~= "" and isValidRobloxAudio(value) then
-                if value:match("^%d+$") then
-                    value = "rbxassetid://" .. value
-                end
-                currentMusic = value
-                playMusic(currentMusic)
-            else
-                WazureV1:Notify({
-                    Title   = "Lỗi!",
-                    Content = "Chỉ nhận ID nhạc Roblox, không phải YouTube!",
-                    Logo    = "rbxassetid://18289959127",
-                    Time    = 2,
-                })
-            end
-        end
-    })
-end
-
--- 5) Tạo các Tab khác với nút demo
-for _, name in ipairs({
-    "Sub Farm", "Fruits - Raid", "Status",
-    "Server", "PvP", "Player",
-    "Sea Event", "Leviathan", "Prehistoric Event",
-    "OneClick", "OneClickDebug"
-}) do
+-- 4) Thiết lập các Tab cơ bản (label + nút)
+for _, name in ipairs(Tabs) do
     local tab = TabObjects[name]
-    tab:MakeSeperator("Thông báo " .. name)
-       :Set("Tab " .. name .. " đã được tạo!")
-    tab:MakeButton("Bấm vào " .. name, {
-        Title   = "Thông báo " .. name,
-        Content = "Bạn vừa nhấn nút " .. name .. "!",
-        Logo    = "rbxassetid://18289959127",
+    tab:MakeLabel("=== " .. name .. " ===")
+    tab:MakeButton(name, {
+        Title = "Bạn vừa nhấn " .. name,
+        Content = "Tab " .. name .. " hoạt động!",
+        Logo = "rbxassetid://18289959127",
         Callback = function()
             WazureV1:Notify({
-                Title   = name,
-                Content = name .. " callback chạy!",
-                Logo    = "rbxassetid://18289959127",
-                Time    = 2,
+                Title = name,
+                Content = "Bạn vừa nhấn nút " .. name .. " thành công.",
+                Logo = "rbxassetid://18289959127",
+                Time = 2,
             })
         end
     })
 end
 
--- 6) Tab "Webhook": TextInput + Save demo
-do
-    local webhookTab = TabObjects["Webhook"]
-    local savedWebhook = ""
-    webhookTab:MakeTextInput("Webhook", {
-        Title   = "Webhook",
-        Content = "Nhập URL WebHook",
-        Callback = function(value)
-            savedWebhook = value
-        end
-    })
-    webhookTab:MakeButton("Lưu Webhook", {
-        Title   = "Webhook Saved",
-        Content = "Webhook URL đã được lưu!",
-        Logo    = "rbxassetid://18289959127",
-        Callback = function()
-            if savedWebhook ~= "" then
-                WazureV1:Notify({
-                    Title   = "Success",
-                    Content = "Đã lưu: " .. savedWebhook,
-                    Logo    = "rbxassetid://18289959127",
-                    Time    = 2
-                })
-            else
-                WazureV1:Notify({
-                    Title   = "Lỗi",
-                    Content = "Chưa nhập Webhook URL!",
-                    Logo    = "rbxassetid://18289959127",
-                    Time    = 2
-                })
-            end
-        end
-    })
-end
-
--- 7) Tab "Setting": Toggle "Fast Attack New"
+-- 5) Setting Tab: Các chức năng khác
 do
     local settingTab = TabObjects["Setting"]
-    settingTab:MakeSeperator("Thông báo Setting")
-              :Set("Tab Setting đã được tạo!")
+    local Toggles = {
+        AutoFarm = false,
+        AutoKillBoss = false,
+        AutoCollectChest = false,
+        AutoSeaBeast = false,
+    }
 
-    local fastAttackToggle = settingTab:MakeToggle("Fast Attack New", {
-        Title   = "Use Fast Attack New",
-        Content = "Roblox change fast attack (not use old fast attack)",
-        Default = false,
-        Callback = function(enabled)
-            local net    = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net")
-            local player = Players.LocalPlayer
-            local hrp    = player.Character and player.Character:WaitForChild("HumanoidRootPart")
+    -- Load trạng thái từ Config lưu
+    local configData = WazureV1:GetConfig()
+    if configData then
+        Toggles.AutoFarm = configData.AutoFarm or false
+        Toggles.AutoKillBoss = configData.AutoKillBoss or false
+        Toggles.AutoCollectChest = configData.AutoCollectChest or false
+        Toggles.AutoSeaBeast = configData.AutoSeaBeast or false
+    end
 
-            if enabled then
-                print("Fast Attack New đã BẬT")
-                spawn(function()
-                    while fastAttackToggle.Value and hrp and task.wait(0.1) do
-                        local targets = {}
-                        for _, container in ipairs({
-                            Workspace:FindFirstChild("Enemies"),
-                            Workspace:FindFirstChild("Characters")
-                        }) do
-                            if container then
-                                for _, v in ipairs(container:GetChildren()) do
-                                    local vhrp = v:FindFirstChild("HumanoidRootPart")
-                                    if v:FindFirstChildWhichIsA("Humanoid")
-                                    and vhrp
-                                    and (vhrp.Position - hrp.Position).Magnitude <= 50 then
-                                        table.insert(targets, v)
-                                    end
-                                end
-                            end
-                        end
-                        if #targets > 0 then
-                            net["RE/RegisterAttack"]:FireServer(-math.huge)
-                            local head = targets[1]:FindFirstChild("Head")
-                            net["RE/RegisterHit"]:FireServer(head, targets)
-                        end
-                    end
-                end)
-            else
-                print("Fast Attack New đã TẮT")
-                -- Vòng lặp tự ngừng vì fastAttackToggle.Value = false
+    -- Hàm tạo nút bấm
+    local function CreateToggleButton(tab, label, toggleKey, startFunc)
+        local Button = tab:MakeButton(label, {
+            Title = label,
+            Content = "Đang kiểm tra trạng thái...",
+            Logo = "rbxassetid://18289959127",
+            Callback = function()
+                Toggles[toggleKey] = not Toggles[toggleKey]
+
+                -- Cập nhật màu nút
+                if Toggles[toggleKey] then
+                    Button.BackgroundColor3 = Color3.fromRGB(6, 141, 234)  -- Màu xanh khi bật
+                    startFunc()
+                    WazureV1:Notify({
+                        Title = label,
+                        Content = label .. " đã BẬT!",
+                        Logo = "rbxassetid://18289959127",
+                        Time = 2
+                    })
+                else
+                    Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Màu đen khi tắt
+                    WazureV1:Notify({
+                        Title = label,
+                        Content = label .. " đã TẮT!",
+                        Logo = "rbxassetid://18289959127",
+                        Time = 2
+                    })
+                end
+
+                -- Save trạng thái vào Config
+                local currentConfig = WazureV1:GetConfig() or {}
+                currentConfig[toggleKey] = Toggles[toggleKey]
+                WazureV1:SaveConfig(currentConfig)
             end
+        })
+
+        -- Set màu đúng theo trạng thái đã lưu
+        if Toggles[toggleKey] then
+            Button.BackgroundColor3 = Color3.fromRGB(6, 141, 234)
+            startFunc()
+        else
+            Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         end
-    })
+    end
+
+    -- Tạo các nút bấm trong Setting Tab (loại bỏ Fast Attack)
+    CreateToggleButton(settingTab, "Auto Farm", "AutoFarm", function() 
+        -- Logic Auto Farm ở đây
+    end)
+    CreateToggleButton(settingTab, "Auto Kill Boss", "AutoKillBoss", function()
+        -- Logic Auto Kill Boss ở đây
+    end)
+    CreateToggleButton(settingTab, "Auto Collect Chest", "AutoCollectChest", function()
+        -- Logic Auto Collect Chest ở đây
+    end)
+    CreateToggleButton(settingTab, "Auto Sea Beast", "AutoSeaBeast", function()
+        -- Logic Auto Sea Beast ở đây
+    end)
 end
 
--- 8) Kết thúc
-print("W-azure UI loaded with all tabs & functions.")
+-- 9) Done
+print("W-azure UI loaded with all tabs & functions without Fast Attack.")
