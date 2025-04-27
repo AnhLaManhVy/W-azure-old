@@ -252,8 +252,18 @@ local SettingButton = SettingTab:MakeButton("Bấm vào Setting", {
             Time = 2,
         })
     end
+ local Toggle = MainTab:MakeToggle(<Fast Attack new>, {
+	["Title"]= <use fast attack>,
+	["Content"] = <roblox change fast attack not use old fast attackkkkk :3>,
+	["Default"] = <boolean>,
+	["Callback"] = <local net=game.ReplicatedStorage.Modules.Net;local player=game.Players.LocalPlayer;local hrp=player.Character and player.Character:WaitForChild("HumanoidRootPart")while task.wait()do if not hrp then return end;local targets,count={},0;for _,_v in next,{workspace:FindFirstChild("Enemies"),workspace:FindFirstChild("Characters")}do if _v then for _,v in next,_v:GetChildren()do local vhrp=v:FindFirstChild("HumanoidRootPart")if v:FindFirstChildWhichIsA("Humanoid")and vhrp and(vhrp.Position-hrp.Position).Magnitude<=50 then count+=1;targets[count]={v,vhrp}end end end end;if count>0 then net["RE/RegisterAttack"]:FireServer(-math.huge)net["RE/RegisterHit"]:FireServer(targets[1][1]:FindFirstChild("Head"),targets)end end>
 })
-
+Toggle:Set(<boolean>)
+print(Toggle.Value)
+      })
+   end
+  end
+})
 -- Tab "OneClick"
 local OneClickButton = OneClickTab:MakeButton("Bấm vào OneClick", {
     ["Title"] = "Thông báo OneClick",
