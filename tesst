@@ -28,18 +28,17 @@ local WazureGui = WazureV1:Start({
 
 -- 3) Tạo các Tab
 local MainTab = WazureGui:MakeTab("Main")
-local MusicTab = WazureGui:MakeTab("Music")
 local SubFarmTab = WazureGui:MakeTab("Sub Farm")
-local PlayerTab = WazureGui:MakeTab("Player")
-local PvPTab = WazureGui:MakeTab("PvP")
 local FruitsRaidTab = WazureGui:MakeTab("Fruits - Raid")
 local StatusTab = WazureGui:MakeTab("Status")
 local ServerTab = WazureGui:MakeTab("Server")
+local PvPTab = WazureGui:MakeTab("PvP")
+local PlayerTab = WazureGui:MakeTab("Player")
 local SeaEventTab = WazureGui:MakeTab("Sea Event")
 local LeviathanTab = WazureGui:MakeTab("Leviathan")
 local PrehistoricEventTab = WazureGui:MakeTab("Prehistoric Event")
 local WebhookTab = WazureGui:MakeTab("Webhook")
-local RaceV4Tab = WazureGui:MakeTab("Race V4")
+local MusicTab = WazureGui:MakeTab("Music")
 local SettingTab = WazureGui:MakeTab("Setting")
 local OneClickTab = WazureGui:MakeTab("OneClick")
 local OneClickDebugTab = WazureGui:MakeTab("OneClickDebug")
@@ -72,7 +71,7 @@ local function playMusic(url)
     sound:Play()
 
     print("Đang phát nhạc:", url)
-endo
+end
 
 -- TextInput trong Tab "Music"
 local MusicInput = MusicTab:MakeTextInput("Music", {
@@ -80,10 +79,6 @@ local MusicInput = MusicTab:MakeTextInput("Music", {
     ["Content"] = "Add URL ID Roblox để phát nhạc",
     ["Callback"] = function(value)
         if value ~= "" then
-local MusicInput = MusicTab:MakeTextInput("Music", {
-    ["Title"] = "Music",
-    ["Content"] = "Add URL ID Roblox để phát nhạc",
-    ["Callback"] = function(value)
             if isValidRobloxAudio(value) then
                 -- Nếu chỉ là số, thêm "rbxassetid://"
                 if string.match(value, "^%d+$") then
@@ -107,7 +102,8 @@ local MusicInput = MusicTab:MakeTextInput("Music", {
     end
 })
 
--- 5) Tạo các Button và Seperators cho các tab
+-- 5) Tạo các Tab khác
+
 -- Tab "Sub Farm"
 local SubFarmSeperator = SubFarmTab:MakeSeperator("Thông báo Sub Farm")
 SubFarmSeperator:Set("Tab Sub Farm đã được tạo!")
@@ -126,18 +122,54 @@ local SubFarmButton = SubFarmTab:MakeButton("Bấm vào Sub Farm", {
     end
 })
 
--- Tab "Player"
-local PlayerSeperator = PlayerTab:MakeSeperator("Thông báo Player")
-PlayerSeperator:Set("Tab Player đã được tạo!")
-local PlayerButton = PlayerTab:MakeButton("Bấm vào Player", {
-    ["Title"] = "Thông báo Player",
-    ["Content"] = "Bạn vừa nhấn nút Player!",
+-- Tab "Fruits - Raid"
+local FruitsRaidSeperator = FruitsRaidTab:MakeSeperator("Thông báo Fruits Raid")
+FruitsRaidSeperator:Set("Tab Fruits Raid đã được tạo!")
+local FruitsRaidButton = FruitsRaidTab:MakeButton("Bấm vào Fruits Raid", {
+    ["Title"] = "Thông báo Fruits Raid",
+    ["Content"] = "Bạn vừa nhấn nút Fruits Raid!",
     ["Logo"] = "rbxassetid://18289959127",
     ["Callback"] = function()
-        print("Nút Player đã được nhấn!")
+        print("Nút Fruits Raid đã được nhấn!")
         WazureV1:Notify({
-            Title = "Player",
-            Content = "Bạn vừa nhấn nút Player thành công.",
+            Title = "Fruits Raid",
+            Content = "Bạn vừa nhấn nút Fruits Raid thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "Status"
+local StatusSeperator = StatusTab:MakeSeperator("Thông báo Status")
+StatusSeperator:Set("Tab Status đã được tạo!")
+local StatusButton = StatusTab:MakeButton("Bấm vào Status", {
+    ["Title"] = "Thông báo Status",
+    ["Content"] = "Bạn vừa nhấn nút Status!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Status đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Status",
+            Content = "Bạn vừa nhấn nút Status thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "Server"
+local ServerSeperator = ServerTab:MakeSeperator("Thông báo Server")
+ServerSeperator:Set("Tab Server đã được tạo!")
+local ServerButton = ServerTab:MakeButton("Bấm vào Server", {
+    ["Title"] = "Thông báo Server",
+    ["Content"] = "Bạn vừa nhấn nút Server!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Server đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Server",
+            Content = "Bạn vừa nhấn nút Server thành công.",
             Logo = "rbxassetid://18289959127",
             Time = 2,
         })
@@ -162,36 +194,18 @@ local PvPButton = PvPTab:MakeButton("Bấm vào PvP", {
     end
 })
 
--- Tab "Sea Event"
-local SeaEventSeperator = SeaEventTab:MakeSeperator("Thông báo Sea Event")
-SeaEventSeperator:Set("Tab Sea Event đã được tạo!")
-local SeaEventButton = SeaEventTab:MakeButton("Bấm vào Sea Event", {
-    ["Title"] = "Thông báo Sea Event",
-    ["Content"] = "Bạn vừa nhấn nút Sea Event!",
+-- Tab "Player"
+local PlayerSeperator = PlayerTab:MakeSeperator("Thông báo Player")
+PlayerSeperator:Set("Tab Player đã được tạo!")
+local PlayerButton = PlayerTab:MakeButton("Bấm vào Player", {
+    ["Title"] = "Thông báo Player",
+    ["Content"] = "Bạn vừa nhấn nút Player!",
     ["Logo"] = "rbxassetid://18289959127",
     ["Callback"] = function()
-        print("Nút Sea Event đã được nhấn!")
+        print("Nút Player đã được nhấn!")
         WazureV1:Notify({
-            Title = "Sea Event",
-            Content = "Bạn vừa nhấn nút Sea Event thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
-    end
-})
-
--- Tab "Leviathan"
-local LeviathanSeperator = LeviathanTab:MakeSeperator("Thông báo Leviathan")
-LeviathanSeperator:Set("Tab Leviathan đã được tạo!")
-local LeviathanButton = LeviathanTab:MakeButton("Bấm vào Leviathan", {
-    ["Title"] = "Thông báo Leviathan",
-    ["Content"] = "Bạn vừa nhấn nút Leviathan!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút Leviathan đã được nhấn!")
-        WazureV1:Notify({
-            Title = "Leviathan",
-            Content = "Bạn vừa nhấn nút Leviathan thành công.",
+            Title = "Player",
+            Content = "Bạn vừa nhấn nút Player thành công.",
             Logo = "rbxassetid://18289959127",
             Time = 2,
         })
@@ -199,24 +213,26 @@ local LeviathanButton = LeviathanTab:MakeButton("Bấm vào Leviathan", {
 })
 
 -- Tab "Webhook"
-local MusicInput = MusicTab:MakeTextInput("webhook", {
-    ["Title"] = "WebHook",
-    ["Content"] = "Add URL WebHook,
+local WebhookInput = WebhookTab:MakeTextInput("Webhook", {
+    ["Title"] = "Webhook",
+    ["Content"] = "Add URL WebHook",
     ["Callback"] = function(value)
-local WebhookSeperator = WebhookTab:MakeSeperator("Thông báo Webhook")
-WebhookSeperator:Set("by M-Vy")
-local WebhookButton = WebhookTab:MakeButton("confirm / xác nhận", {
-    ["Title"] = "Edit Url ",
-    ["Content"] = "check url again",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("DogTanny")
-        WazureV1:Notify({
-            Title = "Success",
-            Content = "WebHook Done",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
+        if value ~= "" then
+            print("WebHook URL đã được nhập:", value)
+            WazureV1:Notify({
+                Title = "Success",
+                Content = "Webhook URL đã được nhập thành công.",
+                Logo = "rbxassetid://18289959127",
+                Time = 2,
+            })
+        else
+            WazureV1:Notify({
+                Title = "Lỗi",
+                Content = "Chưa nhập Webhook URL!",
+                Logo = "rbxassetid://18289959127",
+                Time = 2,
+            })
+        end
     end
 })
 
@@ -238,4 +254,36 @@ local SettingButton = SettingTab:MakeButton("Bấm vào Setting", {
     end
 })
 
-print("UI đã được khởi tạo thành công!")
+-- Tab "OneClick"
+local OneClickButton = OneClickTab:MakeButton("Bấm vào OneClick", {
+    ["Title"] = "Thông báo OneClick",
+    ["Content"] = "Bạn vừa nhấn nút OneClick!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút OneClick đã được nhấn!")
+        WazureV1:Notify({
+            Title = "OneClick",
+            Content = "Bạn vừa nhấn nút OneClick thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "OneClickDebug"
+local OneClickDebugButton = OneClickDebugTab:MakeButton("Bấm vào OneClickDebug", {
+    ["Title"] = "Thông báo OneClickDebug",
+    ["Content"] = "Bạn vừa nhấn nút OneClickDebug!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút OneClickDebug đã được nhấn!")
+        WazureV1:Notify({
+            Title = "OneClickDebug",
+            Content = "Bạn vừa nhấn nút OneClickDebug thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- 6) Kết thúc
