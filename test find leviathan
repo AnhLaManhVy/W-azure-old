@@ -1,0 +1,441 @@
+-- 1) Load thư viện WazureV1 từ GitHub
+local WazureV1 = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/0xteru/uilibrary/refs/heads/main/Wazure%20V1%20Lib/Source.lua"
+))()
+
+-- 2) Khởi tạo GUI và parent vào PlayerGui
+local Players     = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local WazureGui = WazureV1:Start({
+    Name            = "W-azure",
+    ["Logo Player"] = "rbxassetid://18243105495",
+    ["Name Player"] = "SongDaiThanhHuyenTh",
+    ["Tab Width"]   = 120,
+    Color           = Color3.fromRGB(6, 141, 234),
+    ["Custom Toggle"] = false,
+    ["Save Config"] = { Folder = "W-azure", ["Name Config"] = "Config" },
+    ["CloseCallBack"] = function()
+        WazureV1:Notify({
+            Title   = "DogTanny",
+            Content = "Closed UI!",
+            Logo    = "rbxassetid://18289959127",
+            Time    = 1,
+            Delay   = 5,
+        })
+    end
+})
+WazureGui.Gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-- services shortcut
+local Workspace = game:GetService("Workspace")
+
+-- 3) Tạo tất cả các Tab
+local tabNames = {
+    "Main","Sub Farm","Fruits - Raid","Status","Server","PvP",
+    "Player","Sea Event","Leviathan","Prehistoric Event",
+    "Webhook","Music","Setting","OneClick","OneClickDebug"
+}
+local Tabs = {}
+for _, name in ipairs(tabNames) do
+    Tabs[name] = WazureGui:MakeTab(name)
+end
+
+-- 4) Main tab
+do
+    local t = Tabs["Main"]
+    t:MakeSeperator("Welcome"):Set("W-azure loaded!")
+    t:MakeButton("Test Main", {
+        Title   = "Main Tab",
+        Content = "Main tab is working!",
+        Logo    = "rbxassetid://18289959127",
+        Callback = function()
+            WazureV1:Notify({
+                Title   = "Main",
+                Content = "Test OK",
+                Logo    = "rbxassetid://18289959127",
+                Time    = 2
+            })
+        end
+    })
+end
+
+-- 5) Sub Farm
+do
+    local t = Tabs["Sub Farm"]
+    t:MakeSeperator("Auto Farm")
+    t:MakeToggle("Auto Farm", {
+        Title   = "Auto Farm",
+        Content = "Tự động farm mobs",
+        Default = false,
+        Callback = function(on)
+            if on then
+                spawn(function()
+                    while t:FindFirstChild("Auto Farm").Value do
+                        -- TODO: Auto farm logic
+                        task.wait(1)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+-- 6) Fruits - Raid
+do
+    local t = Tabs["Fruits - Raid"]
+    t:MakeSeperator("Auto Fruits Raid")
+    t:MakeToggle("Auto Fruits Raid", {
+        Title   = "Auto Fruits Raid",
+        Content = "Tự động tham gia Fruits Raid",
+        Default = false,
+        Callback = function(on)
+            if on then
+                spawn(function()
+                    while t:FindFirstChild("Auto Fruits Raid").Value do
+                        -- TODO: Fruits Raid logic
+                        task.wait(2)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+-- 7) Status
+do
+    local t = Tabs["Status"]
+    t:MakeSeperator("Player Status")
+    t:MakeButton("Xem Status", {
+        Title   = "Status",
+        Content = "Hiển thị HP và tọa độ",
+        Logo    = "rbxassetid://18289959127",
+        Callback = function()
+            local c = LocalPlayer.Character
+            if c and c:FindFirstChild("Humanoid") then
+                local hp = c.Humanoid.Health
+                local p  = c.PrimaryPart.Position
+                WazureV1:Notify({
+                    Title   = "Status",
+                    Content = string.format("HP: %.0f  Pos: (%.1f, %.1f, %.1f)", hp, p.X, p.Y, p.Z),
+                    Logo    = "rbxassetid://18289959127",
+                    Time    = 3
+                })
+            end
+        end
+    })
+end
+
+-- 8) Server
+do
+    local t = Tabs["Server"]
+    t:MakeSeperator("Server Hop")
+    t:MakeButton("Đổi Server", {
+        Title   = "Server",
+        Content = "Thử rớt server mới",
+        Logo    = "rbxassetid://18289959127",
+        Callback = function()
+            -- TODO: server hop logic
+        end
+    })
+end
+
+-- 9) PvP
+do
+    local t = Tabs["PvP"]
+    t:MakeSeperator("Auto PvP")
+    t:MakeToggle("Auto PvP", {
+        Title   = "Auto PvP",
+        Content = "Tự động đánh Player",
+        Default = false,
+        Callback = function(on)
+            if on then
+                spawn(function()
+                    while t:FindFirstChild("Auto PvP").Value do
+                        -- TODO: PvP logic
+                        task.wait(1)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+-- 10) Player
+do
+    local t = Tabs["Player"]
+    t:MakeSeperator("Player Settings")
+    t:MakeSlider("WalkSpeed", {
+        Title   = "WalkSpeed",
+        Min     = 16,
+        Max     = 100,
+        Default = 16,
+        Callback = function(v)
+            local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+            if h then h.WalkSpeed = v end
+        end
+    })
+    t:MakeSlider("JumpPower", {
+        Title   = "JumpPower",
+        Min     = 50,
+        Max     = 200,
+        Default = 50,
+        Callback = function(v)
+            local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+            if h then h.JumpPower = v end
+        end
+    })
+end
+
+-- 11) Sea Event
+do
+    local t = Tabs["Sea Event"]
+    t:MakeSeperator("Auto Sea Event")
+    t:MakeToggle("Auto Sea Event", {
+        Title   = "Auto Sea Event",
+        Content = "Tự động tham gia Sea Event",
+        Default = false,
+        Callback = function(on)
+            if on then
+                spawn(function()
+                    while t:FindFirstChild("Auto Sea Event").Value do
+                        -- TODO: Sea Event logic
+                        task.wait(2)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+-- 12) Leviathan
+do
+    local t = Tabs["Leviathan"]
+    t:MakeSeperator("Auto Leviathan Gate")
+     :Set("Giảm tốc 40%, bay Y=40, noclip, tự lái tìm Gate")
+
+    local enabled = false
+    local reachedGate = false
+    local boat, bodyPos, collisions = nil, nil, {}
+
+    -- tìm thuyền Beast Hunter
+    local function findBoat()
+        return Workspace:FindFirstChild("Beast Hunter", true)
+    end
+
+    t:MakeToggle("Auto Leviathan", {
+        Title   = "Auto Leviathan",
+        Content = "Bật/tắt Auto Leviathan",
+        Default = false,
+        Callback = function(on)
+            if on then
+                enabled = true
+                reachedGate = false
+
+                boat = findBoat()
+                if not boat or not boat.PrimaryPart then
+                    WazureV1:Notify("Không tìm thấy Beast Hunter!", 3)
+                    enabled = false
+                    return
+                end
+                WazureV1:Notify("Bật Auto Leviathan", 2)
+
+                -- giảm tốc 40%
+                for _, seat in ipairs(boat:GetDescendants()) do
+                    if seat:IsA("VehicleSeat") then
+                        pcall(function() seat.MaxSpeed = seat.MaxSpeed * 0.4 end)
+                    end
+                end
+
+                -- BodyPosition Y=40
+                bodyPos = Instance.new("BodyPosition", boat.PrimaryPart)
+                bodyPos.MaxForce = Vector3.new(1e5,1e5,1e5)
+                bodyPos.P = 1e5; bodyPos.D = 100
+                task.spawn(function()
+                    while enabled do
+                        local p = boat.PrimaryPart.Position
+                        bodyPos.Position = Vector3.new(p.X,40,p.Z)
+                        task.wait()
+                    end
+                end)
+
+                -- noclip
+                collisions = {}
+                for _, part in ipairs(boat:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        collisions[part] = part.CanCollide
+                        part.CanCollide = false
+                    end
+                end
+
+                -- bay random
+                task.spawn(function()
+                    while enabled and not reachedGate do
+                        local p = boat.PrimaryPart.Position
+                        bodyPos.Position = Vector3.new(
+                            p.X + math.random(-10,10),
+                            40,
+                            p.Z + math.random(-10,10)
+                        )
+                        task.wait(5)
+                    end
+                end)
+
+                -- tìm và lái đến Gate
+                task.spawn(function()
+                    while enabled do
+                        local gate = Workspace:FindFirstChild("LeviathanGate", true)
+                        if gate and gate.PrimaryPart then
+                            while enabled and not reachedGate do
+                                local gp = gate.PrimaryPart.Position
+                                bodyPos.Position = Vector3.new(gp.X,40,gp.Z)
+                                if (boat.PrimaryPart.Position - gp).Magnitude <= 20 then
+                                    reachedGate = true
+                                end
+                                task.wait(0.5)
+                            end
+                            break
+                        end
+                        task.wait(1)
+                    end
+                end)
+
+            else
+                -- tắt
+                enabled = false
+                if bodyPos then bodyPos:Destroy(); bodyPos = nil end
+                if boat then
+                    for part, col in pairs(collisions) do
+                        if part:IsA("BasePart") then part.CanCollide = col end
+                    end
+                    collisions = {}
+                end
+                WazureV1:Notify("Tắt Auto Leviathan", 2)
+            end
+        end
+    })
+end
+
+-- 13) Prehistoric Event
+do
+    local t = Tabs["Prehistoric Event"]
+    t:MakeSeperator("Auto Prehistoric")
+    t:MakeToggle("Auto Prehistoric", {
+        Title   = "Auto Prehistoric",
+        Content = "Tự động xử lý Prehistoric",
+        Default = false,
+        Callback = function(on)
+            if on then
+                spawn(function()
+                    while t:FindFirstChild("Auto Prehistoric").Value do
+                        -- TODO
+                        task.wait(2)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+-- 14) Webhook
+do
+    local t = Tabs["Webhook"]
+    local saved = ""
+    t:MakeTextInput("Webhook", {
+        Title   = "Webhook URL",
+        Content = "Nhập URL",
+        Callback = function(v) saved = v end
+    })
+    t:MakeButton("Lưu", {
+        Title   = "Saved",
+        Content = function() return saved ~= "" and saved or "Chưa nhập" end,
+        Logo    = "rbxassetid://18289959127",
+        Callback = function()
+            if saved ~= "" then
+                WazureV1:Notify("Đã lưu: "..saved, 2)
+            else
+                WazureV1:Notify("Chưa nhập URL", 2)
+            end
+        end
+    })
+end
+
+-- 15) Music
+do
+    local t = Tabs["Music"]
+    local sound
+    t:MakeTextInput("Music", {
+        Title   = "ID Roblox",
+        Content = "Nhập chỉ ID",
+        Callback = function(v)
+            if v:match("^%d+$") then
+                if sound then sound:Destroy() end
+                sound = Instance.new("Sound", game:GetService("SoundService"))
+                sound.SoundId = "rbxassetid://"..v
+                sound.Looped = true
+                sound:Play()
+                WazureV1:Notify("Phát nhạc: "..v, 2)
+            else
+                WazureV1:Notify("ID không hợp lệ", 2)
+            end
+        end
+    })
+end
+
+-- 16) Setting (demo)
+do
+    local t = Tabs["Setting"]
+    t:MakeSeperator("Settings")
+    t:MakeToggle("Demo", {
+        Title   = "Demo Toggle",
+        Content = "Chỉ để demo",
+        Default = false,
+        Callback = function() end
+    })
+end
+
+-- 17) OneClick
+do
+    local t = Tabs["OneClick"]
+    t:MakeSeperator("OneClick")
+    t:MakeButton("Bật All", {
+        Title   = "OneClick",
+        Content = "Bật tất cả toggle",
+        Logo    = "rbxassetid://18289959127",
+        Callback = function()
+            for _, key in ipairs({
+                "Auto Farm","Auto Fruits Raid","Auto PvP",
+                "Auto Sea Event","Auto Leviathan","Auto Prehistoric"
+            }) do
+                local btn = Tabs[key] and Tabs[key]:FindFirstChild(key)
+                if btn and not btn.Value then
+                    btn:Fire()
+                end
+            end
+            WazureV1:Notify("All ON", 2)
+        end
+    })
+end
+
+-- 18) OneClickDebug
+do
+    local t = Tabs["OneClickDebug"]
+    t:MakeSeperator("Debug")
+    t:MakeButton("In States", {
+        Title   = "OneClickDebug",
+        Content = "In trạng thái toggle",
+        Logo    = "rbxassetid://18289959127",
+        Callback = function()
+            print("=== Toggle States ===")
+            for _, key in ipairs({
+                "Auto Farm","Auto Fruits Raid","Auto PvP",
+                "Auto Sea Event","Auto Leviathan","Auto Prehistoric"
+            }) do
+                local btn = Tabs[key] and Tabs[key]:FindFirstChild(key)
+                print(key, btn and btn.Value)
+            end
+        end
+    })
+end
+
+print("W-azure UI loaded with full functionality.")
