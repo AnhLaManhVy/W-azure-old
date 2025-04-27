@@ -199,21 +199,21 @@ local LeviathanButton = LeviathanTab:MakeButton("Bấm vào Leviathan", {
 })
 
 -- Tab "Webhook"
-local MusicInput = MusicTab:MakeTextInput("Music", {
-    ["Title"] = "Music",
-    ["Content"] = "Add URL ID Roblox để phát nhạc",
+local MusicInput = MusicTab:MakeTextInput("webhook", {
+    ["Title"] = "WebHook",
+    ["Content"] = "Add URL WebHook,
     ["Callback"] = function(value)
 local WebhookSeperator = WebhookTab:MakeSeperator("Thông báo Webhook")
-WebhookSeperator:Set("Tab Webhook đã được tạo!")
-local WebhookButton = WebhookTab:MakeButton("Bấm vào Webhook", {
-    ["Title"] = "Thông báo Webhook",
-    ["Content"] = "Bạn vừa nhấn nút Webhook!",
+WebhookSeperator:Set("by M-Vy")
+local WebhookButton = WebhookTab:MakeButton("confirm / xác nhận", {
+    ["Title"] = "Edit Url ",
+    ["Content"] = "check url again",
     ["Logo"] = "rbxassetid://18289959127",
     ["Callback"] = function()
-        print("Nút Webhook đã được nhấn!")
+        print("DogTanny")
         WazureV1:Notify({
-            Title = "Webhook",
-            Content = "Bạn vừa nhấn nút Webhook thành công.",
+            Title = "Success",
+            Content = "WebHook Done",
             Logo = "rbxassetid://18289959127",
             Time = 2,
         })
