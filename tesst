@@ -1,7 +1,7 @@
 -- 1) Load thư viện WazureV1 từ GitHub
-local WazureV1 = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/0xteru/uilibrary/refs/heads/main/Wazure%20V1%20Lib/Source.lua"
-))()
+local WazureV1 = loadstring(
+    game:HttpGet("https://raw.githubusercontent.com/0xteru/uilibrary/refs/heads/main/Wazure%20V1%20Lib/Source.lua")
+)()
 
 -- 2) Khởi tạo GUI
 local WazureGui = WazureV1:Start({
@@ -11,11 +11,14 @@ local WazureGui = WazureV1:Start({
     ["Tab Width"] = 120,
     Color = Color3.fromRGB(6, 141, 234),
     ["Custom Toggle"] = false,
-    ["Save Config"] = { Folder = "W-azure", ["Name Config"] = "Config" },
+    ["Save Config"] = {
+        Folder = "W-azure",
+        ["Name Config"] = "Config",
+    },
     ["CloseCallBack"] = function()
         WazureV1:Notify({
-            Title = "W-azure",
-            Content = "UI Closed",
+            Title = "DogTanny",
+            Content = "Closed UI!",
             Logo = "rbxassetid://18289959127",
             Time = 1,
             Delay = 5,
@@ -23,114 +26,216 @@ local WazureGui = WazureV1:Start({
     end
 })
 
--- 3) Tạo tất cả các Tab
-local Tabs = {
-    "Main", "Sub Farm", "Fruits - Raid", "Status", "Server", "PvP", "Player", "Sea Event",
-    "Leviathan", "Prehistoric Event", "Webhook", "Music", "Setting", "OneClick", "OneClickDebug"
-}
+-- 3) Tạo các Tab
+local MainTab = WazureGui:MakeTab("Main")
+local MusicTab = WazureGui:MakeTab("Music")
+local SubFarmTab = WazureGui:MakeTab("Sub Farm")
+local PlayerTab = WazureGui:MakeTab("Player")
+local PvPTab = WazureGui:MakeTab("PvP")
+local FruitsRaidTab = WazureGui:MakeTab("Fruits - Raid")
+local StatusTab = WazureGui:MakeTab("Status")
+local ServerTab = WazureGui:MakeTab("Server")
+local SeaEventTab = WazureGui:MakeTab("Sea Event")
+local LeviathanTab = WazureGui:MakeTab("Leviathan")
+local PrehistoricEventTab = WazureGui:MakeTab("Prehistoric Event")
+local WebhookTab = WazureGui:MakeTab("Webhook")
+local RaceV4Tab = WazureGui:MakeTab("Race V4")
+local SettingTab = WazureGui:MakeTab("Setting")
+local OneClickTab = WazureGui:MakeTab("OneClick")
+local OneClickDebugTab = WazureGui:MakeTab("OneClickDebug")
 
-local TabObjects = {}
-for _, name in ipairs(Tabs) do
-    TabObjects[name] = WazureGui:MakeTab(name)
+-- 4) Tạo Tab "Music" với TextInput để nhập URL
+local currentMusic = nil
+local sound = nil
+
+-- Hàm kiểm tra định dạng URL (chỉ nhận ID nhạc Roblox)
+local function isValidRobloxAudio(input)
+    if string.find(string.lower(input), "youtube") or string.find(string.lower(input), "youtu.be") then
+        return false
+    end
+    return string.match(input, "^%d+$") or string.find(input, "rbxassetid://")
 end
 
--- 4) Thiết lập các Tab cơ bản (label + nút)
-for _, name in ipairs(Tabs) do
-    local tab = TabObjects[name]
-    tab:MakeLabel("=== " .. name .. " ===")
-    tab:MakeButton(name, {
-        Title = "Bạn vừa nhấn " .. name,
-        Content = "Tab " .. name .. " hoạt động!",
-        Logo = "rbxassetid://18289959127",
-        Callback = function()
-            WazureV1:Notify({
-                Title = name,
-                Content = "Bạn vừa nhấn nút " .. name .. " thành công.",
-                Logo = "rbxassetid://18289959127",
-                Time = 2,
-            })
-        end
-    })
-end
-
--- 5) Setting Tab: Các chức năng khác
-do
-    local settingTab = TabObjects["Setting"]
-    local Toggles = {
-        AutoFarm = false,
-        AutoKillBoss = false,
-        AutoCollectChest = false,
-        AutoSeaBeast = false,
-    }
-
-    -- Load trạng thái từ Config lưu
-    local configData = WazureV1:GetConfig()
-    if configData then
-        Toggles.AutoFarm = configData.AutoFarm or false
-        Toggles.AutoKillBoss = configData.AutoKillBoss or false
-        Toggles.AutoCollectChest = configData.AutoCollectChest or false
-        Toggles.AutoSeaBeast = configData.AutoSeaBeast or false
+-- Hàm phát nhạc
+local function playMusic(url)
+    if sound then
+        sound:Destroy() -- Xóa nhạc cũ
+        sound = nil
     end
 
-    -- Hàm tạo nút bấm
-    local function CreateToggleButton(tab, label, toggleKey, startFunc)
-        local Button = tab:MakeButton(label, {
-            Title = label,
-            Content = "Đang kiểm tra trạng thái...",
-            Logo = "rbxassetid://18289959127",
-            Callback = function()
-                Toggles[toggleKey] = not Toggles[toggleKey]
+    -- Tạo Sound mới
+    sound = Instance.new("Sound")
+    sound.Parent = game:GetService("SoundService")
+    sound.SoundId = url
+    sound.Volume = 1
+    sound.Looped = true
+    sound:Play()
 
-                -- Cập nhật màu nút
-                if Toggles[toggleKey] then
-                    Button.BackgroundColor3 = Color3.fromRGB(6, 141, 234)  -- Màu xanh khi bật
-                    startFunc()
-                    WazureV1:Notify({
-                        Title = label,
-                        Content = label .. " đã BẬT!",
-                        Logo = "rbxassetid://18289959127",
-                        Time = 2
-                    })
-                else
-                    Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Màu đen khi tắt
-                    WazureV1:Notify({
-                        Title = label,
-                        Content = label .. " đã TẮT!",
-                        Logo = "rbxassetid://18289959127",
-                        Time = 2
-                    })
+    print("Đang phát nhạc:", url)
+endo
+
+-- TextInput trong Tab "Music"
+local MusicInput = MusicTab:MakeTextInput("Music", {
+    ["Title"] = "Music",
+    ["Content"] = "Add URL ID Roblox để phát nhạc",
+    ["Callback"] = function(value)
+        if value ~= "" then
+local MusicInput = MusicTab:MakeTextInput("Music", {
+    ["Title"] = "Music",
+    ["Content"] = "Add URL ID Roblox để phát nhạc",
+    ["Callback"] = function(value)
+            if isValidRobloxAudio(value) then
+                -- Nếu chỉ là số, thêm "rbxassetid://"
+                if string.match(value, "^%d+$") then
+                    value = "rbxassetid://" .. value
                 end
-
-                -- Save trạng thái vào Config
-                local currentConfig = WazureV1:GetConfig() or {}
-                currentConfig[toggleKey] = Toggles[toggleKey]
-                WazureV1:SaveConfig(currentConfig)
+                currentMusic = value
+                playMusic(currentMusic)
+            else
+                -- Notify lỗi nếu nhập link YouTube
+                WazureV1:Notify({
+                    Title = "Lỗi!",
+                    Content = "Không được nhập link YouTube! Chỉ nhận ID nhạc Roblox!",
+                    Logo = "rbxassetid://18289959127",
+                    Time = 2,
+                })
+                print("URL nhập sai định dạng!")
             end
-        })
-
-        -- Set màu đúng theo trạng thái đã lưu
-        if Toggles[toggleKey] then
-            Button.BackgroundColor3 = Color3.fromRGB(6, 141, 234)
-            startFunc()
         else
-            Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            print("Không có URL được nhập.")
         end
     end
+})
 
-    -- Tạo các nút bấm trong Setting Tab (loại bỏ Fast Attack)
-    CreateToggleButton(settingTab, "Auto Farm", "AutoFarm", function() 
-        -- Logic Auto Farm ở đây
-    end)
-    CreateToggleButton(settingTab, "Auto Kill Boss", "AutoKillBoss", function()
-        -- Logic Auto Kill Boss ở đây
-    end)
-    CreateToggleButton(settingTab, "Auto Collect Chest", "AutoCollectChest", function()
-        -- Logic Auto Collect Chest ở đây
-    end)
-    CreateToggleButton(settingTab, "Auto Sea Beast", "AutoSeaBeast", function()
-        -- Logic Auto Sea Beast ở đây
-    end)
-end
+-- 5) Tạo các Button và Seperators cho các tab
+-- Tab "Sub Farm"
+local SubFarmSeperator = SubFarmTab:MakeSeperator("Thông báo Sub Farm")
+SubFarmSeperator:Set("Tab Sub Farm đã được tạo!")
+local SubFarmButton = SubFarmTab:MakeButton("Bấm vào Sub Farm", {
+    ["Title"] = "Thông báo Sub Farm",
+    ["Content"] = "Bạn vừa nhấn nút Sub Farm!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Sub Farm đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Sub Farm",
+            Content = "Bạn vừa nhấn nút Sub Farm thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
 
--- 9) Done
-print("W-azure UI loaded with all tabs & functions without Fast Attack.")
+-- Tab "Player"
+local PlayerSeperator = PlayerTab:MakeSeperator("Thông báo Player")
+PlayerSeperator:Set("Tab Player đã được tạo!")
+local PlayerButton = PlayerTab:MakeButton("Bấm vào Player", {
+    ["Title"] = "Thông báo Player",
+    ["Content"] = "Bạn vừa nhấn nút Player!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Player đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Player",
+            Content = "Bạn vừa nhấn nút Player thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "PvP"
+local PvPSeperator = PvPTab:MakeSeperator("Thông báo PvP")
+PvPSeperator:Set("Tab PvP đã được tạo!")
+local PvPButton = PvPTab:MakeButton("Bấm vào PvP", {
+    ["Title"] = "Thông báo PvP",
+    ["Content"] = "Bạn vừa nhấn nút PvP!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút PvP đã được nhấn!")
+        WazureV1:Notify({
+            Title = "PvP",
+            Content = "Bạn vừa nhấn nút PvP thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "Sea Event"
+local SeaEventSeperator = SeaEventTab:MakeSeperator("Thông báo Sea Event")
+SeaEventSeperator:Set("Tab Sea Event đã được tạo!")
+local SeaEventButton = SeaEventTab:MakeButton("Bấm vào Sea Event", {
+    ["Title"] = "Thông báo Sea Event",
+    ["Content"] = "Bạn vừa nhấn nút Sea Event!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Sea Event đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Sea Event",
+            Content = "Bạn vừa nhấn nút Sea Event thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "Leviathan"
+local LeviathanSeperator = LeviathanTab:MakeSeperator("Thông báo Leviathan")
+LeviathanSeperator:Set("Tab Leviathan đã được tạo!")
+local LeviathanButton = LeviathanTab:MakeButton("Bấm vào Leviathan", {
+    ["Title"] = "Thông báo Leviathan",
+    ["Content"] = "Bạn vừa nhấn nút Leviathan!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Leviathan đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Leviathan",
+            Content = "Bạn vừa nhấn nút Leviathan thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "Webhook"
+local MusicInput = MusicTab:MakeTextInput("Music", {
+    ["Title"] = "Music",
+    ["Content"] = "Add URL ID Roblox để phát nhạc",
+    ["Callback"] = function(value)
+local WebhookSeperator = WebhookTab:MakeSeperator("Thông báo Webhook")
+WebhookSeperator:Set("Tab Webhook đã được tạo!")
+local WebhookButton = WebhookTab:MakeButton("Bấm vào Webhook", {
+    ["Title"] = "Thông báo Webhook",
+    ["Content"] = "Bạn vừa nhấn nút Webhook!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Webhook đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Webhook",
+            Content = "Bạn vừa nhấn nút Webhook thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "Setting"
+local SettingSeperator = SettingTab:MakeSeperator("Thông báo Setting")
+SettingSeperator:Set("Tab Setting đã được tạo!")
+local SettingButton = SettingTab:MakeButton("Bấm vào Setting", {
+    ["Title"] = "Thông báo Setting",
+    ["Content"] = "Bạn vừa nhấn nút Setting!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Setting đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Setting",
+            Content = "Bạn vừa nhấn nút Setting thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+print("UI đã được khởi tạo thành công!")
