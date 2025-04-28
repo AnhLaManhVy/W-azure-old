@@ -183,8 +183,13 @@ local SeaEventButton = SeaEventTab:MakeButton("Bấm vào Sea Event", {
 -- Tab "Leviathan"
 -- Đảm bảo WazureV1 đã được tải trước khi thực thi (từ GitHub)
 -- Tạo tab 'Leviathan' trên giao diện Wazure
-local leviathanTab = WazureV1:CreateTab("Leviathan", "🌀")  -- Bạn có thể thay đổi biểu tượng nếu cần
-
+local MainTab = WazureGui:MakeTab(<Leviathan>)
+local Toggle = MainTab:MakeToggle(<Auto Find Leviathan>, {
+	["Title"]= <Stop on Frozen Dimenson>,
+	["Content"] = <Done>,
+    ["Logo"] = "rbxassetid://18289959127",
+	["Callback"] = function()
+})
 -- Khai báo biến lưu trạng thái và đối tượng
 local beastHunterBoat = nil       -- Thuyền Beast Hunter tìm được
 local bodyPosition = nil         -- BodyPosition giữ thuyền ở Y = 40
