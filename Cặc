@@ -122,12 +122,12 @@ Tabs.Status:MakeButton("Xem Status", {
 do
     local t = Tabs["Leviathan❄️"]
     t:MakeSeperator("=== Auto Leviathan ❄️ ===")
-     :Set("Dịch chuyển cả thuyền lên Y=100 và tiến Z thực sự")
+     :Set("by M-Vy / Tanny Is Dog")
 
     local beastBoat, moveTask, scanTask
     local autoFind = false
     local foundGate = false
-    local speed = 200 -- Tốc độ đi Z (stud/giây)
+    local speed = 325 -- Tốc độ đi Z (stud/giây)
 
     local function notify(title, content)
         WazureV1:Notify({ Title = title, Content = content, Logo = "rbxassetid://18289959127", Time = 3 })
