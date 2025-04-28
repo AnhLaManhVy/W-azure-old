@@ -1,6 +1,7 @@
 -- 1) Load thư viện WazureV1 từ GitHub
 local WazureV1 = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/0xteru/uilibrary/refs/heads/main/Wazure%20V1%20Lib/Source.lua", true
+    "https://raw.githubusercontent.com/0xteru/uilibrary/refs/heads/main/Wazure%20V1%20Lib/Source.lua",
+    true
 ))()
 
 -- 2) Khởi tạo GUI
@@ -14,8 +15,8 @@ local WazureGui = WazureV1:Start({
     ["Save Config"] = { Folder = "W-azure", ["Name Config"] = "Config" },
     ["CloseCallBack"] = function()
         WazureV1:Notify({
-            Title   = "DogTanny",
-            Content = "Closed UI!",
+            Title   = "W-azure",
+            Content = "UI Closed",
             Logo    = "rbxassetid://18289959127",
             Time    = 1,
             Delay   = 5,
@@ -23,118 +24,206 @@ local WazureGui = WazureV1:Start({
     end
 })
 
--- services
-local Players           = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace         = game:GetService("Workspace")
-local LocalPlayer       = Players.LocalPlayer
+-- 3) Services
+local Workspace = game:GetService("Workspace")
 
--- 3) Tạo tất cả các Tab
+-- 4) Tạo tất cả các Tab
 local tabNames = {
-    "Main","Sub Farm","Fruits - Raid","Status","Server","PvP",
-    "Player","Sea Event","Leviathan","Prehistoric Event",
-    "Webhook","Music","Setting","OneClick","OneClickDebug"
+    "Main","Music","Sub Farm","Fruits - Raid","Status","Server",
+    "PvP","Player","Sea Event","Leviathan","Prehistoric Event",
+    "Webhook","Race V4","Setting","OneClick","OneClickDebug"
 }
 local Tabs = {}
 for _, name in ipairs(tabNames) do
     Tabs[name] = WazureGui:MakeTab(name)
 end
 
--- (Các tab khác như Sub Farm, Fruits - Raid, v.v... giữ nguyên hoặc build tương tự)
+-- 5) Ví dụ nội dung cơ bản cho các tab (bạn có thể tuỳ biến lại)
+-- Main
+Tabs.Main:MakeLabel("=== Welcome to W-azure ===")
+Tabs.Main:MakeButton("Test Main", {
+    Title   = "Hello",
+    Content = "This is Main tab!",
+    Logo    = "rbxassetid://18289959127",
+    Callback = function()
+        WazureV1:Notify({ Title="Main", Content="Main button clicked", Logo="rbxassetid://18289959127", Time=2 })
+    end
+})
 
--- 11) Leviathan: Auto điều khiển thuyền Beast Hunter và tìm Gate
--- Leviathan Tab
-local t = Tabs["Leviathan"]
-t:MakeSeperator("=== Auto Find Leviathan ===")
-:Set("Tự động lái thuyền Beast Hunter, bay Y=40, boost 350%, tìm Gate")
-
--- Các biến
-local bp, conn, running, boat
-
--- Hàm Notify
-local function notif(text)
-    WazureV1:Notify({
-        Title = "Leviathan",
-        Content = text,
-        Logo = "rbxassetid://18289959127",
-        Time = 2
+-- Music
+do
+    local t = Tabs.Music
+    local current, sound
+    local function valid(v)
+        return not (v:lower():find("youtube") or v:lower():find("youtu.be"))
+           and (v:match("^%d+$") or v:find("rbxassetid://"))
+    end
+    local function play(v)
+        if sound then sound:Destroy() end
+        sound = Instance.new("Sound", game:GetService("SoundService"))
+        sound.SoundId = v
+        sound.Looped  = true
+        sound.Volume  = 1
+        sound:Play()
+    end
+    t:MakeTextInput("Music", {
+        Title   = "ID nhạc Roblox",
+        Content = "Nhập chỉ số hoặc rbxassetid://ID",
+        Callback = function(v) current = v end
+    })
+    t:MakeButton("Lưu & Phát", {
+        Title   = "Music Saved",
+        Content = "Đã lưu và phát nhạc!",
+        Logo    = "rbxassetid://18289959127",
+        Callback = function()
+            if current and valid(current) then
+                if current:match("^%d+$") then current = "rbxassetid://"..current end
+                play(current)
+                WazureV1:Notify({ Title="Music", Content="Đang phát: "..current, Logo="rbxassetid://18289959127", Time=2 })
+            else
+                WazureV1:Notify({ Title="Error", Content="Chỉ nhận ID Roblox!", Logo="rbxassetid://18289959127", Time=2 })
+            end
+        end
     })
 end
 
--- Hàm Start
-local function startAuto()
-    boat = workspace:FindFirstChild("Beast Hunter", true)
-    if not boat or not boat.PrimaryPart then
-        notif("Không tìm thấy 'Beast Hunter'!")
-        return
-    end
+-- Sub Farm (stub)
+Tabs["Sub Farm"]:MakeSeperator("Auto Farm"):Set("Chưa có logic")
+Tabs["Sub Farm"]:MakeButton("Do Farm", { Title="Farm", Content="Farm!", Logo="rbxassetid://18289959127", Callback=function() end })
 
-    bp = Instance.new("BodyPosition", boat.PrimaryPart)
-    bp.MaxForce = Vector3.new(1e5, 1e5, 1e5)
-    bp.Position = boat.PrimaryPart.Position + Vector3.new(0,40,0)
+-- Fruits - Raid (stub)
+Tabs["Fruits - Raid"]:MakeSeperator("Auto Fruits Raid"):Set("Chưa có logic")
+Tabs["Fruits - Raid"]:MakeButton("Do Fruits", { Title="Fruits", Content="Fruits!", Logo="rbxassetid://18289959127", Callback=function() end })
 
-    for _, p in ipairs(boat:GetDescendants()) do
-        if p:IsA("BasePart") then
-            p.CanCollide = false
-        end
-    end
-
-    running = true
-
-    task.spawn(function()
-        while running and bp and boat.PrimaryPart do
-            local pos = boat.PrimaryPart.Position
-            bp.Position = Vector3.new(
-                pos.X + math.random(-50,50),
-                40,
-                pos.Z + math.random(-50,50)
-            )
-            task.wait(3)
-        end
-    end)
-
-    conn = workspace.ChildAdded:Connect(function(c)
-        if running and c.Name == "LeviathanGate" then
-            notif("Gate xuất hiện! Đang di chuyển...")
-            local gatePart = c.PrimaryPart or c:FindFirstChildWhichIsA("BasePart")
-            if gatePart then
-                while running and gatePart and boat.PrimaryPart do
-                    bp.Position = gatePart.Position + Vector3.new(0,10,0)
-                    if (boat.PrimaryPart.Position - gatePart.Position).Magnitude < 20 then break end
-                    task.wait(0.5)
-                end
-            end
-        end
-    end)
-
-    notif("Auto Leviathan bật!")
-end
-
--- Hàm Stop
-local function stopAuto()
-    running = false
-    if conn then conn:Disconnect() conn = nil end
-    if bp then bp:Destroy() bp = nil end
-    if boat then
-        for _, p in ipairs(boat:GetDescendants()) do
-            if p:IsA("BasePart") then
-                p.CanCollide = true
-            end
-        end
-    end
-    notif("Auto Leviathan tắt!")
-end
-
--- Tạo Toggle
-t:MakeToggle("Auto Find Leviathan", {
-    Title   = "Bật/Tắt Auto Find",
-    Content = "Tự động tìm Gate & lái thuyền",
-    Default = false,
-    Callback = function(on)
-        if on then
-            startAuto()
-        else
-            stopAuto()
+-- Status
+Tabs.Status:MakeButton("Xem Status", {
+    Title   = "Status",
+    Content = "HP và tọa độ",
+    Logo    = "rbxassetid://18289959127",
+    Callback = function()
+        local pl = game.Players.LocalPlayer
+        local h = pl.Character and pl.Character:FindFirstChild("Humanoid")
+        local pos = pl.Character and pl.Character.PrimaryPart and pl.Character.PrimaryPart.Position
+        if h and pos then
+            WazureV1:Notify({
+                Title="Status",
+                Content=string.format("HP: %.0f, X:%.1f Y:%.1f Z:%.1f", h.Health,pos.X,pos.Y,pos.Z),
+                Logo="rbxassetid://18289959127", Time=3
+            })
         end
     end
 })
+
+-- Server, PvP, Player, Sea Event, Prehistoric Event, Webhook, Race V4, Setting, OneClick, OneClickDebug
+-- ... (Bạn lặp lại mẫu như trên nếu cần)
+
+-- 6) Tab "Leviathan": Auto Find Leviathan (bay Y=100, tiến +Z, quét Gate)
+
+do
+    local t = Tabs["Leviathan"]
+    t:MakeSeperator("=== Auto Leviathan (Bay Y=100 & Tiến Z) ===")
+     :Set("Dịch chuyển cả thuyền lên Y=100 và tiến Z thực sự")
+
+    local beastBoat, moveTask, scanTask
+    local autoFind = false
+    local foundGate = false
+    local speed = 200 -- Tốc độ đi Z (stud/giây)
+
+    local function notify(title, content)
+        WazureV1:Notify({ Title = title, Content = content, Logo = "rbxassetid://18289959127", Time = 3 })
+    end
+
+    local function findModel(substr)
+        for _, m in ipairs(Workspace:GetDescendants()) do
+            if m:IsA("Model") and m.Name:lower():find(substr:lower()) then
+                return m
+            end
+        end
+    end
+
+    local function startAutoFind()
+        autoFind = true
+        foundGate = false
+
+        -- 1) Tìm thuyền
+        beastBoat = findModel("Beast Hunter")
+        if not beastBoat or not beastBoat.PrimaryPart then
+            notify("Leviathan", "Không tìm thấy Beast Hunter!")
+            autoFind = false
+            return
+        end
+        local root = beastBoat.PrimaryPart
+
+        -- 2) Bay lên Y=100 ngay lập tức
+        root.CFrame = CFrame.new(root.Position.X, 100, root.Position.Z)
+
+        -- 3) Tắt CanCollide tất cả parts
+        for _, p in ipairs(beastBoat:GetDescendants()) do
+            if p:IsA("BasePart") then
+                p.CanCollide = false
+            end
+        end
+
+        notify("Leviathan", "Auto Find BẬT: Bay Y=100 & tiến Z", 2)
+
+        -- 4) Dịch chuyển thuyền bằng CFrame
+        moveTask = task.spawn(function()
+            while autoFind and beastBoat and beastBoat.PrimaryPart do
+                local root = beastBoat.PrimaryPart
+                local dt = task.wait()
+                local pos = root.Position
+                root.CFrame = CFrame.new(pos.X, 100, pos.Z + speed * dt)
+            end
+        end)
+
+        -- 5) Scan Leviathan Gate
+        scanTask = task.spawn(function()
+            while autoFind do
+                local gate = Workspace:FindFirstChild("LeviathanGate", true)
+                if gate then
+                    foundGate = true
+                    notify("Leviathan", "Phát hiện Gate! Đang tiếp cận...", 4)
+                    local gp = gate.PrimaryPart or gate:FindFirstChildWhichIsA("BasePart")
+                    local root = beastBoat and beastBoat.PrimaryPart
+                    while autoFind and gp and root do
+                        root.CFrame = CFrame.new(gp.Position.X, gp.Position.Y + 10, gp.Position.Z)
+                        if (root.Position - gp.Position).Magnitude < 20 then
+                            break
+                        end
+                        task.wait(0.5)
+                    end
+                    break
+                end
+                task.wait(2)
+            end
+        end)
+    end
+
+    local function stopAutoFind()
+        autoFind = false
+        if moveTask then moveTask:Cancel() end
+        if scanTask then scanTask:Cancel() end
+        if beastBoat then
+            for _, p in ipairs(beastBoat:GetDescendants()) do
+                if p:IsA("BasePart") then
+                    p.CanCollide = true
+                end
+            end
+        end
+        notify("Leviathan", "Auto Find TẮT", 2)
+    end
+
+    -- Toggle
+    t:MakeToggle("Auto Find Leviathan", {
+        Title = "Bay Y=100 & Tiến Z",
+        Content = "Dịch chuyển cả thuyền thật",
+        Default = false,
+        Callback = function(isOn)
+            if isOn then
+                startAutoFind()
+            else
+                stopAutoFind()
+            end
+        end
+    })
+end
