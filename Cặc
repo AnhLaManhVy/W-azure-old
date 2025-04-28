@@ -1,6 +1,6 @@
 -- 1) Load thư viện WazureV1 từ GitHub
 local WazureV1 = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/0xteru/uilibrary/refs/heads/main/Wazure%20V1%20Lib/Source.lua"
+    "https://raw.githubusercontent.com/0xteru/uilibrary/refs/heads/main/Wazure%20V1%20Lib/Source.lua", true
 ))()
 
 -- 2) Khởi tạo GUI
