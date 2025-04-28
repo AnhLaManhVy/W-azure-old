@@ -120,8 +120,8 @@ Tabs.Status:MakeButton("Xem Status", {
 -- 6) Tab "Leviathan": Auto Find Leviathan (bay Y=100, tiến +Z, quét Gate)
 
 do
-    local t = Tabs["Leviathan"]
-    t:MakeSeperator("=== Auto Leviathan (Bay Y=100 & Tiến Z) ===")
+    local t = Tabs["Leviathan❄️"]
+    t:MakeSeperator("=== Auto Leviathan ❄️ ===")
      :Set("Dịch chuyển cả thuyền lên Y=100 và tiến Z thực sự")
 
     local beastBoat, moveTask, scanTask
@@ -164,7 +164,7 @@ do
             end
         end
 
-        notify("Leviathan", "Auto Find BẬT: Bay Y=100 & tiến Z", 2)
+        notify("Leviathan", "Auto Find Frozen Dinenson❄️: Bay Y=100 & tiến Z", 2)
 
         -- 4) Dịch chuyển thuyền bằng CFrame
         moveTask = task.spawn(function()
@@ -210,13 +210,13 @@ do
                 end
             end
         end
-        notify("Leviathan", "Auto Find TẮT", 2)
+        notify("Leviathan", "Auto Find Off", 2)
     end
 
     -- Toggle
     t:MakeToggle("Auto Find Leviathan", {
-        Title = "Bay Y=100 & Tiến Z",
-        Content = "Dịch chuyển cả thuyền thật",
+        Title = "Auto Find Leviathan ❄️",
+        Content = "only find not attack leviathan",
         Default = false,
         Callback = function(isOn)
             if isOn then
