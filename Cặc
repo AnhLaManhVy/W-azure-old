@@ -117,7 +117,7 @@ Tabs.Status:MakeButton("Xem Status", {
 -- Server, PvP, Player, Sea Event, Prehistoric Event, Webhook, Race V4, Setting, OneClick, OneClickDebug
 -- ... (Bạn lặp lại mẫu như trên nếu cần)
 
--- 6) Tab "Leviathan": Auto Find Leviathan (bay Y=100, tiến +Z, quét Gate)
+-- 6) Tab "Leviathan": Auto Find Leviathan
 
 do
     local t = Tabs["Leviathan❄️"]
@@ -214,7 +214,7 @@ do
     end
 
     -- Toggle
-    t:MakeToggle("Auto Find Leviathan", {
+    t:MakeToggle("Auto Find Leviathan❄️", {
         Title = "Auto Find Leviathan ❄️",
         Content = "only find not attack leviathan",
         Default = false,
