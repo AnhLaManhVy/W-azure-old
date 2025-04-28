@@ -181,23 +181,109 @@ local SeaEventButton = SeaEventTab:MakeButton("Bấm vào Sea Event", {
 })
 
 -- Tab "Leviathan"
-local LeviathanSeperator = LeviathanTab:MakeSeperator("Thông báo Leviathan")
-LeviathanSeperator:Set("Tab Leviathan đã được tạo!")
-local LeviathanButton = LeviathanTab:MakeButton("Bấm vào Leviathan", {
-    ["Title"] = "Thông báo Leviathan",
-    ["Content"] = "Bạn vừa nhấn nút Leviathan!",
-    ["Logo"] = "rbxassetid://18289959127",
-    ["Callback"] = function()
-        print("Nút Leviathan đã được nhấn!")
-        WazureV1:Notify({
-            Title = "Leviathan",
-            Content = "Bạn vừa nhấn nút Leviathan thành công.",
-            Logo = "rbxassetid://18289959127",
-            Time = 2,
-        })
-    end
-})
+-- Đảm bảo WazureV1 đã được tải trước khi thực thi (từ GitHub)
+-- Tạo tab 'Leviathan' trên giao diện Wazure
+local leviathanTab = WazureV1:CreateTab("Leviathan", "🌀")  -- Bạn có thể thay đổi biểu tượng nếu cần
 
+-- Khai báo biến lưu trạng thái và đối tượng
+local beastHunterBoat = nil       -- Thuyền Beast Hunter tìm được
+local bodyPosition = nil         -- BodyPosition giữ thuyền ở Y = 40
+local randomMove = false         -- Cờ điều khiển chế độ bay ngẫu nhiên
+local gateConnection = nil       -- Kết nối sự kiện ChildAdded của workspace
+
+-- Hàm bắt đầu Auto Find Leviathan
+local function startAutoFind()
+    -- Tìm thuyền 'Beast Hunter' trong workspace
+    beastHunterBoat = workspace:FindFirstChild("Beast Hunter")
+    if not beastHunterBoat then
+        WazureV1:Notify("Auto Find Leviathan", "Không tìm thấy thuyền 'Beast Hunter'!", 3)
+        return
+    end
+
+    -- Tạo BodyPosition để giữ thuyền ở độ cao Y = 40
+    local primaryPart = beastHunterBoat.PrimaryPart or beastHunterBoat:FindFirstChildWhichIsA("BasePart")
+    if primaryPart then
+        bodyPosition = Instance.new("BodyPosition", primaryPart)
+        bodyPosition.Position = Vector3.new(primaryPart.Position.X, 40, primaryPart.Position.Z)
+        bodyPosition.MaxForce = Vector3.new(1e5, 1e5, 1e5)  -- Lực lớn đủ để giữ thuyền
+    end
+
+    -- Vô hiệu hóa va chạm cho toàn bộ thành phần của thuyền (noclip)
+    for _, part in ipairs(beastHunterBoat:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = false
+        end
+    end
+
+    -- Bắt đầu chu trình di chuyển ngẫu nhiên trên mặt biển
+    randomMove = true
+    spawn(function()
+        while randomMove do
+            if not beastHunterBoat.PrimaryPart then break end
+            -- Chọn toạ độ ngẫu nhiên (có thể điều chỉnh phạm vi cho phù hợp)
+            local randomX = math.random(-500, 500)
+            local randomZ = math.random(-500, 500)
+            local targetPos = Vector3.new(randomX, 40, randomZ)
+            if bodyPosition then
+                bodyPosition.Position = targetPos
+            end
+            wait(3)  -- Thời gian giữa các lần thay đổi vị trí
+        end
+    end)
+
+    -- Lắng nghe sự kiện xuất hiện của LeviathanGate trong workspace
+    gateConnection = workspace.ChildAdded:Connect(function(child)
+        if child.Name == "LeviathanGate" then
+            -- Phát hiện LeviathanGate
+            randomMove = false  -- Dừng di chuyển ngẫu nhiên
+            -- Di chuyển thuyền tới gần LeviathanGate
+            local gatePrimary = child.PrimaryPart or child:FindFirstChildWhichIsA("BasePart")
+            if gatePrimary and beastHunterBoat.PrimaryPart and bodyPosition then
+                -- Đặt vị trí của BodyPosition gần cổng (ví dụ cách cổng 10 đơn vị)
+                bodyPosition.Position = gatePrimary.Position + Vector3.new(0, 0, 10)
+            end
+            -- Gửi thông báo qua WazureV1
+            WazureV1:Notify("Auto Find Leviathan", "Đã phát hiện LeviathanGate! Đang di chuyển tới Leviathan.", 5)
+        end
+    end)
+end
+
+-- Hàm dừng Auto Find Leviathan
+local function stopAutoFind()
+    -- Dừng di chuyển ngẫu nhiên
+    randomMove = false
+    -- Ngắt kết nối sự kiện giám sát LeviathanGate
+    if gateConnection then
+        gateConnection:Disconnect()
+        gateConnection = nil
+    end
+    -- Hủy BodyPosition (nếu có)
+    if bodyPosition then
+        bodyPosition:Destroy()
+        bodyPosition = nil
+    end
+    -- Khôi phục va chạm cho các bộ phận của thuyền
+    if beastHunterBoat then
+        for _, part in ipairs(beastHunterBoat:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
+            end
+        end
+    end
+    -- Reset các biến
+    beastHunterBoat = nil
+    -- Thông báo đã tắt chức năng
+    WazureV1:Notify("Auto Find Leviathan", "Chức năng đã được tắt.", 3)
+end
+
+-- Tạo Toggle "Auto Find Leviathan" sử dụng WazureV1 API
+leviathanTab:CreateToggle("Auto Find Leviathan", function(isEnabled)
+    if isEnabled then
+        startAutoFind()
+    else
+        stopAutoFind()
+    end
+end)
 -- Tab "Webhook"
 local MusicInput = MusicTab:MakeTextInput("Music", {
     ["Title"] = "Music",
