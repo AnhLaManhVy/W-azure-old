@@ -119,8 +119,7 @@ Tabs.Status:MakeButton("Xem Status", {
 
 -- 6) Tab "Leviathan": Auto Find Leviathan
 
--- Tab "Leviathan": Auto Find Leviathan❄️
-
+-- Leviathan Tab
 do
     local t = Tabs["Leviathan"]
     t:MakeSeperator("=== Auto Leviathan❄️ ===")
@@ -129,7 +128,7 @@ do
     local beastBoat, moveTask, scanTask
     local autoFind = false
     local foundGate = false
-    local speed = 50 -- Tốc độ mặc định (stud/giây)
+    local speed = 50
 
     local function notify(title, content)
         WazureV1:Notify({ Title = title, Content = content, Logo = "rbxassetid://18289959127", Time = 3 })
@@ -147,7 +146,6 @@ do
         autoFind = true
         foundGate = false
 
-        -- 1) Tìm thuyền
         beastBoat = findModel("Beast Hunter")
         if not beastBoat or not beastBoat.PrimaryPart then
             notify("Leviathan", "Không tìm thấy Beast Hunter!")
@@ -155,11 +153,8 @@ do
             return
         end
         local root = beastBoat.PrimaryPart
-
-        -- 2) Bay lên Y=100 ngay lập tức
         root.CFrame = CFrame.new(root.Position.X, 100, root.Position.Z)
 
-        -- 3) Tắt CanCollide tất cả parts
         for _, p in ipairs(beastBoat:GetDescendants()) do
             if p:IsA("BasePart") then
                 p.CanCollide = false
@@ -168,17 +163,14 @@ do
 
         notify("Leviathan", "Auto Find BẬT: Bay Y=100 & tiến Z", 2)
 
-        -- 4) Dịch chuyển thuyền bằng CFrame
         moveTask = task.spawn(function()
             while autoFind and beastBoat and beastBoat.PrimaryPart do
-                local root = beastBoat.PrimaryPart
                 local dt = task.wait()
-                local pos = root.Position
-                root.CFrame = CFrame.new(pos.X, 100, pos.Z + speed * dt)
+                local pos = beastBoat.PrimaryPart.Position
+                beastBoat.PrimaryPart.CFrame = CFrame.new(pos.X, 100, pos.Z + speed * dt)
             end
         end)
 
-        -- 5) Scan Leviathan Gate (kèm Auto Stop)
         scanTask = task.spawn(function()
             while autoFind do
                 local gate = Workspace:FindFirstChild("LeviathanGate", true)
@@ -203,7 +195,7 @@ do
         end)
     end
 
-    local function stopAutoFind()
+    function stopAutoFind()
         autoFind = false
         if moveTask then moveTask:Cancel() end
         if scanTask then scanTask:Cancel() end
@@ -217,7 +209,6 @@ do
         notify("Leviathan", "Auto Find TẮT", 2)
     end
 
-    -- Toggle
     t:MakeToggle("Auto Find Leviathan", {
         Title = "Bay Y=100 & Tiến Z",
         Content = "Dịch chuyển cả thuyền thật",
@@ -231,7 +222,6 @@ do
         end
     })
 
-    -- Thêm TextInput để chỉnh Speed
     t:MakeTextInput("Tốc độ bay (stud/giây)", {
         Title = "Tốc độ Bay",
         Content = "Nhập số tốc độ (ví dụ: 50)",
