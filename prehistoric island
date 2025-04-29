@@ -1,0 +1,586 @@
+-- 1) Load thư viện WazureV1 từ GitHub
+local WazureV1 = loadstring(
+    game:HttpGet("https://raw.githubusercontent.com/0xteru/uilibrary/refs/heads/main/Wazure%20V1%20Lib/Source.lua")
+)()
+
+-- 2) Khởi tạo GUI
+local WazureGui = WazureV1:Start({
+    Name = "W-azure",
+    ["Logo Player"] = "rbxassetid://18243105495",
+    ["Name Player"] = "SongDaiThanhHuyenTh",
+    ["Tab Width"] = 120,
+    Color = Color3.fromRGB(6, 141, 234),
+    ["Custom Toggle"] = false,
+    ["Save Config"] = {
+        Folder = "W-azure",
+        ["Name Config"] = "Config",
+    },
+    ["CloseCallBack"] = function()
+        WazureV1:Notify({
+            Title = "DogTanny",
+            Content = "Closed UI!",
+            Logo = "rbxassetid://18289959127",
+            Time = 1,
+            Delay = 5,
+        })
+    end
+})
+
+-- 3) Tạo các Tab
+local MainTab = WazureGui:MakeTab("Main")
+local MusicTab = WazureGui:MakeTab("Music")
+local SubFarmTab = WazureGui:MakeTab("Sub Farm")
+local PlayerTab = WazureGui:MakeTab("Player")
+local PvPTab = WazureGui:MakeTab("PvP")
+local FruitsRaidTab = WazureGui:MakeTab("Fruits - Raid")
+local StatusTab = WazureGui:MakeTab("Status")
+local ServerTab = WazureGui:MakeTab("Server")
+local SeaEventTab = WazureGui:MakeTab("Sea Event")
+local LeviathanTab = WazureGui:MakeTab("Leviathan")
+local PrehistoricEventTab = WazureGui:MakeTab("Prehistoric Event")
+local WebhookTab = WazureGui:MakeTab("Webhook")
+local RaceV4Tab = WazureGui:MakeTab("Race V4")
+local SettingTab = WazureGui:MakeTab("Setting")
+local OneClickTab = WazureGui:MakeTab("OneClick")
+local OneClickDebugTab = WazureGui:MakeTab("OneClickDebug")
+
+-- 4) Tạo Tab "Music" với TextInput để nhập URL
+local currentMusic = nil
+local sound = nil
+
+-- Hàm kiểm tra định dạng URL (chỉ nhận ID nhạc Roblox)
+local function isValidRobloxAudio(input)
+    if string.find(string.lower(input), "youtube") or string.find(string.lower(input), "youtu.be") then
+        return false
+    end
+    return string.match(input, "^%d+$") or string.find(input, "rbxassetid://")
+end
+
+-- Hàm phát nhạc
+local function playMusic(url)
+    if sound then
+        sound:Destroy() -- Xóa nhạc cũ
+        sound = nil
+    end
+
+    -- Tạo Sound mới
+    sound = Instance.new("Sound")
+    sound.Parent = game:GetService("SoundService")
+    sound.SoundId = url
+    sound.Volume = 1
+    sound.Looped = true
+    sound:Play()
+
+    print("Đang phát nhạc:", url)
+endo
+
+-- TextInput trong Tab "Music"
+local MusicInput = MusicTab:MakeTextInput("Music", {
+    ["Title"] = "Music",
+    ["Content"] = "Add URL ID Roblox để phát nhạc",
+    ["Callback"] = function(value)
+        if value ~= "" then
+local MusicInput = MusicTab:MakeTextInput("Music", {
+    ["Title"] = "Music",
+    ["Content"] = "Add URL ID Roblox để phát nhạc",
+    ["Callback"] = function(value)
+            if isValidRobloxAudio(value) then
+                -- Nếu chỉ là số, thêm "rbxassetid://"
+                if string.match(value, "^%d+$") then
+                    value = "rbxassetid://" .. value
+                end
+                currentMusic = value
+                playMusic(currentMusic)
+            else
+                -- Notify lỗi nếu nhập link YouTube
+                WazureV1:Notify({
+                    Title = "Lỗi!",
+                    Content = "Không được nhập link YouTube! Chỉ nhận ID nhạc Roblox!",
+                    Logo = "rbxassetid://18289959127",
+                    Time = 2,
+                })
+                print("URL nhập sai định dạng!")
+            end
+        else
+            print("Không có URL được nhập.")
+        end
+    end
+})
+
+-- 5) Tạo các Button và Seperators cho các tab
+-- Tab "Sub Farm"
+local SubFarmSeperator = SubFarmTab:MakeSeperator("Thông báo Sub Farm")
+SubFarmSeperator:Set("Tab Sub Farm đã được tạo!")
+local SubFarmButton = SubFarmTab:MakeButton("Bấm vào Sub Farm", {
+    ["Title"] = "Thông báo Sub Farm",
+    ["Content"] = "Bạn vừa nhấn nút Sub Farm!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Sub Farm đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Sub Farm",
+            Content = "Bạn vừa nhấn nút Sub Farm thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "Player"
+local PlayerSeperator = PlayerTab:MakeSeperator("Thông báo Player")
+PlayerSeperator:Set("Tab Player đã được tạo!")
+local PlayerButton = PlayerTab:MakeButton("Bấm vào Player", {
+    ["Title"] = "Thông báo Player",
+    ["Content"] = "Bạn vừa nhấn nút Player!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Player đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Player",
+            Content = "Bạn vừa nhấn nút Player thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "PvP"
+local PvPSeperator = PvPTab:MakeSeperator("Thông báo PvP")
+PvPSeperator:Set("Tab PvP đã được tạo!")
+local PvPButton = PvPTab:MakeButton("Bấm vào PvP", {
+    ["Title"] = "Thông báo PvP",
+    ["Content"] = "Bạn vừa nhấn nút PvP!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút PvP đã được nhấn!")
+        WazureV1:Notify({
+            Title = "PvP",
+            Content = "Bạn vừa nhấn nút PvP thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "Sea Event"
+local SeaEventSeperator = SeaEventTab:MakeSeperator("Thông báo Sea Event")
+SeaEventSeperator:Set("Tab Sea Event đã được tạo!")
+local SeaEventButton = SeaEventTab:MakeButton("Bấm vào Sea Event", {
+    ["Title"] = "Thông báo Sea Event",
+    ["Content"] = "Bạn vừa nhấn nút Sea Event!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Sea Event đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Sea Event",
+            Content = "Bạn vừa nhấn nút Sea Event thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- 6) Tab "Leviathan": Auto Find Leviathan (bay Y=100, tiến +Z, quét Gate)
+
+do
+    local t = Tabs["Leviathan"]
+    t:MakeSeperator("=== Auto Leviathan (Bay Y=100 & Tiến Z) ===")
+     :Set("Dịch chuyển cả thuyền lên Y=100 và tiến Z thực sự")
+
+    local beastBoat, moveTask, scanTask
+    local autoFind = false
+    local foundGate = false
+    local speed = 200 -- Tốc độ đi Z (stud/giây)
+
+    local function notify(title, content)
+        WazureV1:Notify({ Title = title, Content = content, Logo = "rbxassetid://18289959127", Time = 3 })
+    end
+
+    local function findModel(substr)
+        for _, m in ipairs(Workspace:GetDescendants()) do
+            if m:IsA("Model") and m.Name:lower():find(substr:lower()) then
+                return m
+            end
+        end
+    end
+
+    local function startAutoFind()
+        autoFind = true
+        foundGate = false
+
+        -- 1) Tìm thuyền
+        beastBoat = findModel("Beast Hunter")
+        if not beastBoat or not beastBoat.PrimaryPart then
+            notify("Leviathan", "Không tìm thấy Beast Hunter!")
+            autoFind = false
+            return
+        end
+        local root = beastBoat.PrimaryPart
+
+        -- 2) Bay lên Y=100 ngay lập tức
+        root.CFrame = CFrame.new(root.Position.X, 100, root.Position.Z)
+
+        -- 3) Tắt CanCollide tất cả parts
+        for _, p in ipairs(beastBoat:GetDescendants()) do
+            if p:IsA("BasePart") then
+                p.CanCollide = false
+            end
+        end
+
+        notify("Leviathan", "Auto Find BẬT: Bay Y=100 & tiến Z", 2)
+
+        -- 4) Dịch chuyển thuyền bằng CFrame
+        moveTask = task.spawn(function()
+            while autoFind and beastBoat and beastBoat.PrimaryPart do
+                local root = beastBoat.PrimaryPart
+                local dt = task.wait()
+                local pos = root.Position
+                root.CFrame = CFrame.new(pos.X, 100, pos.Z + speed * dt)
+            end
+        end)
+
+        -- 5) Scan Leviathan Gate
+        scanTask = task.spawn(function()
+            while autoFind do
+                local gate = Workspace:FindFirstChild("LeviathanGate", true)
+                if gate then
+                    foundGate = true
+                    notify("Leviathan", "Phát hiện Gate! Đang tiếp cận...", 4)
+                    local gp = gate.PrimaryPart or gate:FindFirstChildWhichIsA("BasePart")
+                    local root = beastBoat and beastBoat.PrimaryPart
+                    while autoFind and gp and root do
+                        root.CFrame = CFrame.new(gp.Position.X, gp.Position.Y + 10, gp.Position.Z)
+                        if (root.Position - gp.Position).Magnitude < 20 then
+                            break
+                        end
+                        task.wait(0.5)
+                    end
+                    break
+                end
+                task.wait(2)
+            end
+        end)
+    end
+
+    local function stopAutoFind()
+        autoFind = false
+        if moveTask then moveTask:Cancel() end
+        if scanTask then scanTask:Cancel() end
+        if beastBoat then
+            for _, p in ipairs(beastBoat:GetDescendants()) do
+                if p:IsA("BasePart") then
+                    p.CanCollide = true
+                end
+            end
+        end
+        notify("Leviathan", "Auto Find TẮT", 2)
+    end
+
+    -- Toggle
+    t:MakeToggle("Auto Find Leviathan", {
+        Title = "Bay Y=100 & Tiến Z",
+        Content = "Dịch chuyển cả thuyền thật",
+        Default = false,
+        Callback = function(isOn)
+            if isOn then
+                startAutoFind()
+            else
+                stopAutoFind()
+            end
+        end
+    })
+end
+-- Tab "Webhook"
+local MusicInput = MusicTab:MakeTextInput("Music", {
+    ["Title"] = "Music",
+    ["Content"] = "Add URL ID Roblox để phát nhạc",
+    ["Callback"] = function(value)
+local WebhookSeperator = WebhookTab:MakeSeperator("Thông báo Webhook")
+WebhookSeperator:Set("Tab Webhook đã được tạo!")
+local WebhookButton = WebhookTab:MakeButton("Bấm vào Webhook", {
+    ["Title"] = "Thông báo Webhook",
+    ["Content"] = "Bạn vừa nhấn nút Webhook!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Webhook đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Webhook",
+            Content = "Bạn vừa nhấn nút Webhook thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "Setting"
+local SettingSeperator = SettingTab:MakeSeperator("Thông báo Setting")
+SettingSeperator:Set("Tab Setting đã được tạo!")
+local SettingButton = SettingTab:MakeButton("Bấm vào Setting", {
+    ["Title"] = "Thông báo Setting",
+    ["Content"] = "Bạn vừa nhấn nút Setting!",
+    ["Logo"] = "rbxassetid://18289959127",
+    ["Callback"] = function()
+        print("Nút Setting đã được nhấn!")
+        WazureV1:Notify({
+            Title = "Setting",
+            Content = "Bạn vừa nhấn nút Setting thành công.",
+            Logo = "rbxassetid://18289959127",
+            Time = 2,
+        })
+    end
+})
+
+-- Tab "Prehistoric Event": Auto Find Prehistoric Island
+
+do
+    local t = Tabs["Prehistoric Event"]
+    t:MakeSeperator("=== Auto Prehistoric Island 🦖 ===")
+     :Set("Tự động tìm và dịch chuyển đến Prehistoric Island")
+
+    local autoFind = false
+    local findTask
+
+    local function notify(title, content)
+        WazureV1:Notify({ Title = title, Content = content, Logo = "rbxassetid://18289959127", Time = 3 })
+    end
+
+    local function findPrehistoricIsland()
+        for _, m in ipairs(Workspace:GetDescendants()) do
+            if m:IsA("Model") and m.Name:lower():find("prehistoric island") then
+                return m
+            end
+        end
+    end
+
+    local function startAutoFind()
+        autoFind = true
+        notify("Prehistoric Island", "Đang tìm Prehistoric Island...")
+
+        findTask = task.spawn(function()
+            while autoFind do
+                local island = findPrehistoricIsland()
+                if island and island.PrimaryPart then
+                    notify("Prehistoric Island", "Đã tìm thấy! Dịch chuyển đến đảo...")
+                    LocalPlayer.Character:MoveTo(island.PrimaryPart.Position + Vector3.new(0, 10, 0))
+                    autoFind = false
+                    break
+                end
+                task.wait(2)
+            end
+        end)
+    end
+
+    local function stopAutoFind()
+        autoFind = false
+        if findTask then
+            task.cancel(findTask)
+            findTask = nil
+        end
+        notify("Prehistoric Island", "Đã dừng tìm kiếm.")
+    end
+
+    t:MakeToggle("Auto Find Prehistoric Island", {
+        Title = "Tự động tìm đảo",
+        Content = "Tìm và dịch chuyển đến Prehistoric Island",
+        Default = false,
+        Callback = function(isOn)
+            if isOn then
+                startAutoFind()
+            else
+                stopAutoFind()
+            end
+        end
+    })
+end
+
+-- Tab "Prehistoric Event": Auto Complete Prehistoric Island Event
+
+do
+    local t = Tabs["Prehistoric Event"]
+    t:MakeSeperator("=== Auto Complete Prehistoric Island 🦖 ===")
+     :Set("Tự động tìm và hoàn thành sự kiện Prehistoric Island")
+
+    local autoComplete = false
+    local completeTask
+
+    local function notify(title, content)
+        WazureV1:Notify({ Title = title, Content = content, Logo = "rbxassetid://18289959127", Time = 3 })
+    end
+
+    local function findPrehistoricIsland()
+        for _, m in ipairs(Workspace:GetDescendants()) do
+            if m:IsA("Model") and m.Name:lower():find("prehistoric island") then
+                return m
+            end
+        end
+    end
+
+    local function startAutoComplete()
+        autoComplete = true
+        notify("Prehistoric Island", "Đang tìm Prehistoric Island...")
+
+        completeTask = task.spawn(function()
+            while autoComplete do
+                local island = findPrehistoricIsland()
+                if island and island.PrimaryPart then
+                    notify("Prehistoric Island", "Đã tìm thấy! Dịch chuyển đến đảo...")
+                    LocalPlayer.Character:MoveTo(island.PrimaryPart.Position + Vector3.new(0, 10, 0))
+                    task.wait(2)
+
+                    -- Tìm và tương tác với Fossil Ancient Relic để bắt đầu sự kiện
+                    local relic = island:FindFirstChild("Fossil Ancient Relic", true)
+                    if relic and relic:IsA("BasePart") then
+                        fireclickdetector(relic:FindFirstChildOfClass("ClickDetector"))
+                        notify("Prehistoric Island", "Đã bắt đầu sự kiện Volcano.")
+                        task.wait(2)
+
+                        -- Thực hiện các hành động cần thiết để hoàn thành sự kiện
+                        -- Ví dụ: tấn công Lava Golems, giảm áp suất núi lửa, v.v.
+                        -- Bạn cần thêm logic cụ thể tại đây tùy thuộc vào yêu cầu của sự kiện
+
+                        -- Sau khi hoàn thành sự kiện, thu thập Dino Bones và Dragon Eggs
+                        -- Bạn cần thêm logic cụ thể tại đây để tự động thu thập vật phẩm
+
+                        notify("Prehistoric Island", "Đã hoàn thành sự kiện và thu thập vật phẩm.")
+                        autoComplete = false
+                        break
+                    else
+                        notify("Prehistoric Island", "Không tìm thấy Fossil Ancient Relic.")
+                    end
+                end
+                task.wait(2)
+            end
+        end)
+    end
+
+    local function stopAutoComplete()
+        autoComplete = false
+        if completeTask then
+            task.cancel(completeTask)
+            completeTask = nil
+        end
+        notify("Prehistoric Island", "Đã dừng hoàn thành sự kiện.")
+    end
+
+    t:MakeToggle("Auto Complete Prehistoric Island", {
+        Title = "Tự động hoàn thành sự kiện",
+        Content = "Tìm và hoàn thành sự kiện Prehistoric Island",
+        Default = false,
+        Callback = function(isOn)
+            if isOn then
+                startAutoComplete()
+            else
+                stopAutoComplete()
+            end
+        end
+    })
+end
+
+-- Tab "Prehistoric Event": Auto Collect Dragon Eggs
+
+do
+    local t = Tabs["Prehistoric Event"]
+    t:MakeSeperator("=== Auto Collect Dragon Eggs 🥚 ===")
+     :Set("Tự động nhặt Dragon Eggs sau sự kiện")
+
+    local autoCollectEggs = false
+    local collectEggsTask
+
+    local function notify(title, content)
+        WazureV1:Notify({ Title = title, Content = content, Logo = "rbxassetid://18289959127", Time = 3 })
+    end
+
+    local function startCollectEggs()
+        autoCollectEggs = true
+        notify("Prehistoric Island", "Đang chờ nhặt Dragon Eggs...")
+
+        collectEggsTask = task.spawn(function()
+            while autoCollectEggs do
+                for _, item in ipairs(Workspace:GetDescendants()) do
+                    if item:IsA("Tool") and item.Name == "Dragon Egg" then
+                        LocalPlayer.Character:MoveTo(item.Position)
+                        task.wait(1)
+                    end
+                end
+                task.wait(2)
+            end
+        end)
+    end
+
+    local function stopCollectEggs()
+        autoCollectEggs = false
+        if collectEggsTask then
+            task.cancel(collectEggsTask)
+            collectEggsTask = nil
+        end
+        notify("Prehistoric Island", "Đã dừng nhặt Dragon Eggs.")
+    end
+
+    t:MakeToggle("Auto Collect Dragon Eggs", {
+        Title = "Tự động nhặt trứng rồng",
+        Content = "Nhặt Dragon Eggs sau sự kiện",
+        Default = false,
+        Callback = function(isOn)
+            if isOn then
+                startCollectEggs()
+            else
+                stopCollectEggs()
+            end
+        end
+    })
+end
+
+-- Tab "Prehistoric Event": Auto Collect Dinosaur Bones
+
+do
+    local t = Tabs["Prehistoric Event"]
+    t:MakeSeperator("=== Auto Collect Dinosaur Bones 🦴 ===")
+     :Set("Tự động nhặt Dinosaur Bones sau sự kiện")
+
+    local autoCollectBones = false
+    local collectBonesTask
+
+    local function notify(title, content)
+        WazureV1:Notify({ Title = title, Content = content, Logo = "rbxassetid://18289959127", Time = 3 })
+    end
+
+    local function startCollectBones()
+        autoCollectBones = true
+        notify("Prehistoric Island", "Đang chờ nhặt Dinosaur Bones...")
+
+        collectBonesTask = task.spawn(function()
+            while autoCollectBones do
+                for _, item in ipairs(Workspace:GetDescendants()) do
+                    if item:IsA("Tool") and item.Name == "Dinosaur Bone" then
+                        LocalPlayer.Character:MoveTo(item.Position)
+                        task.wait(1)
+                    end
+                end
+                task.wait(2)
+            end
+        end)
+    end
+
+    local function stopCollectBones()
+        autoCollectBones = false
+        if collectBonesTask then
+            task.cancel(collectBonesTask)
+            collectBonesTask = nil
+        end
+        notify("Prehistoric Island", "Đã dừng nhặt Dinosaur Bones.")
+    end
+
+    t:MakeToggle("Auto Collect Dinosaur Bones", {
+        Title = "Tự động nhặt xương khủng long",
+        Content = "Nhặt Dinosaur Bones sau sự kiện",
+        Default = false,
+        Callback = function(isOn)
+            if isOn then
+                startCollectBones()
+            else
+                stopCollectBones()
+            end
+        end
+    })
+end
+print("UI đã được khởi tạo thành công!")
