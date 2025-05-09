@@ -27,4 +27,4 @@ local WazureGui = WazureV1:Start({
 })
 
 -- 3) Tạo các Tab
-local Maintab = WazureGui:MakeTab("OneClick")
+local OneClick = WazureGui:MakeTab("OneClick")
