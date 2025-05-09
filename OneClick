@@ -7,7 +7,7 @@ local WazureV1 = loadstring(
 local WazureGui = WazureV1:Start({
     Name = "W-azure",
     ["Logo Player"] = "rbxassetid://18243105495",
-    ["Name Player"] = "SongDaiThanhHuyenTh",
+    ["Name Player"] = "@SongDaiThanhHuyenTh",
     ["Tab Width"] = 120,
     Color = Color3.fromRGB(6, 141, 234),
     ["Custom Toggle"] = false,
@@ -28,3 +28,9 @@ local WazureGui = WazureV1:Start({
 
 -- 3) Tạo các Tab
 local OneClick = WazureGui:MakeTab("OneClick")
+
+    t:MakeToggle("OneClick ( All In One )", {
+        Title = "Auto Farm Lv + Buy GHM + CDK + SKUll GUITAL",
+        Content = "Start ?",
+        Default = false,
+        Callback = function(isOn)
