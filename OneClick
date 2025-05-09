@@ -1,0 +1,30 @@
+-- 1) Load thư viện WazureV1 từ GitHub
+local WazureV1 = loadstring(
+    game:HttpGet("https://raw.githubusercontent.com/0xteru/uilibrary/refs/heads/main/Wazure%20V1%20Lib/Source.lua")
+)()
+
+-- 2) Khởi tạo GUI
+local WazureGui = WazureV1:Start({
+    Name = "W-azure",
+    ["Logo Player"] = "rbxassetid://18243105495",
+    ["Name Player"] = "SongDaiThanhHuyenTh",
+    ["Tab Width"] = 120,
+    Color = Color3.fromRGB(6, 141, 234),
+    ["Custom Toggle"] = false,
+    ["Save Config"] = {
+        Folder = "W-azure",
+        ["Name Config"] = "Config",
+    },
+    ["CloseCallBack"] = function()
+        WazureV1:Notify({
+            Title = "DogTanny",
+            Content = "Closed UI!",
+            Logo = "rbxassetid://18289959127",
+            Time = 1,
+            Delay = 5,
+        })
+    end
+})
+
+-- 3) Tạo các Tab
+local Maintab = WazureGui:MakeTab("OneClick")
